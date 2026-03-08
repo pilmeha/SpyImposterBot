@@ -6,7 +6,6 @@ using Telegram.Bot.Types.ReplyMarkups;
 using DotNetEnv;
 
 Env.Load();
-
 var botToken = Environment.GetEnvironmentVariable("BOT_TOKEN")
     ?? throw new InvalidOperationException("BOT_TOKEN not set");
 
