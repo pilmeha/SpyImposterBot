@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SpyImposterBot": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
