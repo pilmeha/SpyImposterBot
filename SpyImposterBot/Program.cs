@@ -34,8 +34,7 @@ var handler = new HttpClientHandler
 var httpClient = new HttpClient(handler);
 
 using var cts = new CancellationTokenSource();
-//var bot = new TelegramBotClient(botToken, cancellationToken: cts.Token);
-var bot = new TelegramBotClient(botToken, httpClient);
+var bot = new TelegramBotClient(botToken, httpClient, cancellationToken: cts.Token);
 var me = await bot.GetMe();
 bot.OnError += OnError;
 bot.OnMessage += OnMessage;
