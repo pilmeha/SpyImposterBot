@@ -4,13 +4,38 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using DotNetEnv;
+using MihaZupan;
 
 Env.Load();
 var botToken = Environment.GetEnvironmentVariable("BOT_TOKEN")
     ?? throw new InvalidOperationException("BOT_TOKEN not set");
 
+// Настройка proxy
+var proxyHost = Environment.GetEnvironmentVariable("PROXY_HOST")
+    ?? throw new InvalidOperationException("PROXY_HOST not set");
+
+var proxyPort = Environment.GetEnvironmentVariable("PROXY_PORT")
+    ?? throw new InvalidOperationException("PROXY_PORT not set");
+
+var proxyUserName = Environment.GetEnvironmentVariable("PROXY_USERNAME")
+    ?? throw new InvalidOperationException("PROXY_USERNAME not set");
+
+var ProxyPassword = Environment.GetEnvironmentVariable("PROXY_PASSWORD")
+    ?? throw new InvalidOperationException("PROXY_PASSWORD not set");
+
+var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort), proxyUserName, ProxyPassword);
+
+var handler = new HttpClientHandler
+{
+    Proxy = proxy,
+    UseProxy = true
+};
+
+var httpClient = new HttpClient(handler);
+
 using var cts = new CancellationTokenSource();
-var bot = new TelegramBotClient(botToken, cancellationToken: cts.Token);
+//var bot = new TelegramBotClient(botToken, cancellationToken: cts.Token);
+var bot = new TelegramBotClient(botToken, httpClient);
 var me = await bot.GetMe();
 bot.OnError += OnError;
 bot.OnMessage += OnMessage;
