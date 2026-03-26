@@ -9,14 +9,14 @@ using Telegram.Bot.Types.Enums;
 
 internal class UpdateHandler
 {
-    private readonly IUserService _userService;
-    private readonly IGameService _gameService;
+    //private readonly IUserService _userService;
+    //private readonly IGameService _gameService;
 
-    public UpdateHandler(IUserService userService, IGameService gameService)
-    {
-        _userService = userService;
-        _gameService = gameService;
-    }
+    //public UpdateHandler(IUserService userService, IGameService gameService)
+    //{
+    //    _userService = userService;
+    //    _gameService = gameService;
+    //}
 
     public async Task HandleUpdateAsync(
         ITelegramBotClient bot, 
@@ -30,7 +30,7 @@ internal class UpdateHandler
 
             if (msg.Text == "/start")
             {
-                await _userService.CreateUser(msg.From!.Id, msg.From.Username);
+                //await _userService.CreateUser(msg.From!.Id, msg.From.Username);
 
                 await bot.SendMessage(msg.Chat, "Привет! Это игра в шпиона");
             }
@@ -48,8 +48,8 @@ internal class UpdateHandler
         return Task.CompletedTask;
     }
 
-    public static implicit operator UpdateHandler(DefaultUpdateHandler v)
-    {
-        throw new NotImplementedException();
-    }
+    //public static implicit operator UpdateHandler(DefaultUpdateHandler v)
+    //{
+    //    throw new NotImplementedException();
+    //}
 }
