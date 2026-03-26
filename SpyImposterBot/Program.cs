@@ -1,71 +1,95 @@
 ﻿using Telegram.Bot;
-using Telegram.Bot.Polling;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using DotNetEnv;
 using MihaZupan;
+using SpyImposterBot.Database;
 
 Env.Load();
-var botToken = Environment.GetEnvironmentVariable("BOT_TOKEN")
-    ?? throw new InvalidOperationException("BOT_TOKEN not set");
 
-// Настройка proxy
-var proxyHost = Environment.GetEnvironmentVariable("PROXY_HOST")
-    ?? throw new InvalidOperationException("PROXY_HOST not set");
-
-var proxyPort = Environment.GetEnvironmentVariable("PROXY_PORT")
-    ?? throw new InvalidOperationException("PROXY_PORT not set");
-
-var proxyUserName = Environment.GetEnvironmentVariable("PROXY_USERNAME")
-    ?? throw new InvalidOperationException("PROXY_USERNAME not set");
-
-var ProxyPassword = Environment.GetEnvironmentVariable("PROXY_PASSWORD")
-    ?? throw new InvalidOperationException("PROXY_PASSWORD not set");
-
-var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort), proxyUserName, ProxyPassword);
-
-var handler = new HttpClientHandler
-{
-    Proxy = proxy,
-    UseProxy = true
-};
-
-var httpClient = new HttpClient(handler);
-
-using var cts = new CancellationTokenSource();
-var bot = new TelegramBotClient(botToken, httpClient, cancellationToken: cts.Token);
-var me = await bot.GetMe();
-bot.OnError += OnError;
-bot.OnMessage += OnMessage;
-bot.OnUpdate += OnUpdate;
-
-Console.WriteLine($"@{me.Username} is running... Press Enter to terminate");
-Console.ReadLine();
-cts.Cancel(); // stop the bot
-
-// method to handle errors in polling or in your OnMessage/OnUpdate code
-async Task OnError(Exception exception, HandleErrorSource source)
-{
-    Console.WriteLine(exception); // just dump the exception to the console
-}
-
-// method that handle messages received by the bot:
-async Task OnMessage(Message msg, UpdateType type)
-{
-    if (msg.Text == "/start")
+var builder = Host.CreateDefaultBuilder(args)
+    .ConfigureServices((context, services) =>
     {
-        await bot.SendMessage(msg.Chat, "Welcome! Pick one direction",
-            replyMarkup: new InlineKeyboardButton[] { "Left", "Right" });
-    }
+        var config = context.Configuration;
+
+        var botToken = Environment.GetEnvironmentVariable("BOT_TOKEN")
+            ?? throw new InvalidOperationException("BOT_TOKEN not set");
+
+        var dbHost = Environment.GetEnvironmentVariable("DB_HOST")
+            ?? throw new InvalidOperationException("DB_HOST not set");
+
+        var dbPort = Environment.GetEnvironmentVariable("DB_PORT")
+            ?? throw new InvalidOperationException("DB_PORT not set");
+
+        var dbUser = Environment.GetEnvironmentVariable("DB_USER")
+            ?? throw new InvalidOperationException("DB_USER not set");
+
+        var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD")
+            ?? throw new InvalidOperationException("DB_PASSWORD not set");
+
+        var dbName = Environment.GetEnvironmentVariable("DB_NAME")
+            ?? throw new InvalidOperationException("DB_NAME not set");
+
+        var connection = Environment.GetEnvironmentVariable("CONNECTION_STRING")
+            ?? $"Host={dbHost};Port={dbPort};Username={dbUser};Password={dbPassword};Database={dbName}";
+
+        // Настройка proxy
+        var proxyHost = Environment.GetEnvironmentVariable("PROXY_HOST")
+            ?? throw new InvalidOperationException("PROXY_HOST not set");
+
+        var proxyPort = Environment.GetEnvironmentVariable("PROXY_PORT")
+            ?? throw new InvalidOperationException("PROXY_PORT not set");
+
+        var proxyUserName = Environment.GetEnvironmentVariable("PROXY_USERNAME")
+            ?? throw new InvalidOperationException("PROXY_USERNAME not set");
+
+        var ProxyPassword = Environment.GetEnvironmentVariable("PROXY_PASSWORD")
+            ?? throw new InvalidOperationException("PROXY_PASSWORD not set");
+
+        var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort), proxyUserName, ProxyPassword);
+
+        var httpClient = new HttpClient(
+            new HttpClientHandler
+            {
+                Proxy = proxy,
+                UseProxy = true
+            }
+        );
+
+        // Telegram
+        services.AddSingleton<ITelegramBotClient>(
+            new TelegramBotClient(botToken, httpClient)
+        );
+
+        // EF Core
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(connection)
+        );
+
+        // Dapper
+        services.AddSingleton<IDbConnectionFactory>(_ =>
+            new DbConnectionFactory(connection)
+        );
+
+        // Services
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IGameService, GameService>();
+
+        // Handler
+        services.AddSingleton<UpdateHandler>();
+
+        // Background bot
+        services.AddHostedService<BotBackgroundService>();
+    });
+
+var host = builder.Build();
+
+// Миграции
+using (var scope = host.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
 }
 
-// method that handle other types of updates received by the bot:
-async Task OnUpdate(Update update)
-{
-    if (update is { CallbackQuery: { } query }) // non-null CallbackQuery
-    {
-        await bot.AnswerCallbackQuery(query.Id, $"You picked {query.Data}");
-        await bot.SendMessage(query.Message!.Chat, $"User {query.From} clicked on {query.Data}");
-    }
-}
+await host.RunAsync();
