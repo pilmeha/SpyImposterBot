@@ -1,11 +1,6 @@
 ﻿using Npgsql;
 using System.Data;
 
-public interface IDbConnectionFactory
-{
-    IDbConnection Create();
-}
-
 internal class DbConnectionFactory : IDbConnectionFactory
 {
     private readonly string _connectionString;

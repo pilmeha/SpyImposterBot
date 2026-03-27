@@ -77,7 +77,8 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddScoped<IGameService, GameService>();
 
         // Handler
-        services.AddSingleton<UpdateHandler>();
+        services.AddSingleton<GameRepository>();
+        services.AddScoped<UpdateHandler>();
 
         // Background bot
         services.AddHostedService<BotBackgroundService>();

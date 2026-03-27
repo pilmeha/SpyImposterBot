@@ -11,13 +11,16 @@ using Telegram.Bot.Types.ReplyMarkups;
 internal class UpdateHandler
 {
     //private readonly IUserService _userService;
-    //private readonly IGameService _gameService;
+    private readonly IGameService _gameService;
+    private readonly GameRepository _repo;
 
-    //public UpdateHandler(IUserService userService, IGameService gameService)
-    //{
-    //    _userService = userService;
-    //    _gameService = gameService;
-    //}
+    private static readonly Dictionary<long, long> ActiveGames = new();
+
+    public UpdateHandler(IGameService gameService, GameRepository repo)
+    {
+        _gameService = gameService;
+        _repo = repo;
+    }
 
     public async Task HandleUpdateAsync(
         ITelegramBotClient bot, 
@@ -29,6 +32,7 @@ internal class UpdateHandler
         {
             var msg = update.Message!;
             var chatId = msg.Chat.Id;
+
             var keyboard1 = new ReplyKeyboardMarkup(
                 new[]
                 {
@@ -40,24 +44,104 @@ internal class UpdateHandler
                 ResizeKeyboard = true
             };
 
-            var keyboardPlayerCount = new InlineKeyboardMarkup(
+            var keyboardPlayerCount = new InlineKeyboardMarkup(new[]
+            {
                 new[]
                 {
-                    new InlineKeyboardButton[] { "3", "4", "5", "6"},
-                    new InlineKeyboardButton[] { "7", "8", "9", "10" },
+                    InlineKeyboardButton.WithCallbackData("3", "players_3"),
+                    InlineKeyboardButton.WithCallbackData("4", "players_4"),
+                    InlineKeyboardButton.WithCallbackData("5", "players_5"),
+                    InlineKeyboardButton.WithCallbackData("6", "players_6"),
+                },
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData("7", "players_7"),
+                    InlineKeyboardButton.WithCallbackData("8", "players_8"),
+                    InlineKeyboardButton.WithCallbackData("9", "players_9"),
+                    InlineKeyboardButton.WithCallbackData("10", "players_10"),
+                },
+            });
+
+            var keyboarGameType = new InlineKeyboardMarkup(
+                new[]
+                {
+                    new InlineKeyboardButton[] { "Классика" },
+                    new InlineKeyboardButton[] { "Мемы" },
+                    new InlineKeyboardButton[] { "Грави Фолз" },
+                    new InlineKeyboardButton[] { "Парные слова" },
+                    new InlineKeyboardButton[] { "Подборки слов" },
                 }
             );
 
+            // START
             if (msg.Text == "/start")
             {
-                //await _userService.CreateUser(msg.From!.Id, msg.From.Username);
-
-                await bot.SendMessage(msg.Chat, "Привет! Это игра в шпиона");
-
-                //await bot.SendMessage(msg.Chat, "Какой-то текст для 1го типа кнопок", replyMarkup: keyboard1);
-
-                await bot.SendMessage(msg.Chat, "Выбери количество игроков!", replyMarkup: keyboardPlayerCount);
+                await bot.SendMessage(chatId, "Привет! Это игра в шпиона");
             }
+
+            // CREATE GAME
+            if (msg.Text == "/newgame")
+            {
+                await bot.SendMessage(chatId, "Выбери количество игроков!", replyMarkup: keyboardPlayerCount);
+            }
+
+            // SHOW WORD
+            if (msg.Text == "/show")
+            {
+                if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
+
+                var game = await _repo.Get(gameId);
+                var player = _gameService.GetPlayer(game!);
+
+                var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
+
+                await bot.SendMessage(chatId, text + "\n\n/next");
+            }
+
+            // NEXT PLAYER
+            if (msg.Text == "/next")
+            {
+                var gameId = ActiveGames[chatId];
+                var game = await _repo.Get(gameId);
+
+                _gameService.NextPlayer(game!);
+                await _repo.Update(game!);
+
+                if (game!.Status == "finished")
+                {
+                    await bot.SendMessage(chatId, "Игра окончена 👾");
+                    return;
+                }
+
+                await bot.SendMessage(chatId, "Передайте телефон следующему игроку\n\n/show");
+            }
+        }
+
+        // callback
+        if (update.Type == UpdateType.CallbackQuery)
+        {
+            var query = update.CallbackQuery!;
+            var chatId = query.Message!.Chat.Id;
+            var data = query.Data;
+
+            if (data!.StartsWith("players_"))
+            {
+                var count = int.Parse(data.Replace("players_", ""));
+
+                await bot.AnswerCallbackQuery(query.Id);
+
+                await bot.SendMessage(chatId, $"Вы выбрали {count} игроков");
+
+                // Создаем игру
+                var game = _gameService.CreateGame(count);
+                var gameId = await _repo.Create(game);
+
+                ActiveGames[chatId] = gameId;
+
+                await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}\nНажмите /show");
+            }
+
+            return;
         }
     }
 
@@ -71,9 +155,4 @@ internal class UpdateHandler
         Console.WriteLine(exception);
         return Task.CompletedTask;
     }
-
-    //public static implicit operator UpdateHandler(DefaultUpdateHandler v)
-    //{
-    //    throw new NotImplementedException();
-    //}
 }
