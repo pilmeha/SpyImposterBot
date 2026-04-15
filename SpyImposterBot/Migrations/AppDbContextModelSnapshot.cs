@@ -49,7 +49,7 @@ namespace SpyImposterBot.Migrations
 
                     b.Property<string>("PlayersData")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("jsonb")
                         .HasColumnName("players_data");
 
                     b.Property<string>("Status")

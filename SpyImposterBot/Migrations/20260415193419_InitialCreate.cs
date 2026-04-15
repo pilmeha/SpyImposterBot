@@ -20,7 +20,7 @@ namespace SpyImposterBot.Migrations
                     created_by = table.Column<long>(type: "bigint", nullable: false),
                     pack_id = table.Column<long>(type: "bigint", nullable: false),
                     game_mode = table.Column<string>(type: "text", nullable: false),
-                    players_data = table.Column<string>(type: "text", nullable: false),
+                    players_data = table.Column<string>(type: "jsonb", nullable: false),
                     current_player_index = table.Column<int>(type: "integer", nullable: false),
                     status = table.Column<string>(type: "text", nullable: false)
                 },

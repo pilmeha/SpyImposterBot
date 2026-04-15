@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SpyImposterBot.Database;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -12,14 +13,16 @@ internal class UpdateHandler
 {
     //private readonly IUserService _userService;
     private readonly IGameService _gameService;
-    private readonly GameRepository _repo;
+    //private readonly GameRepository _repo;
+    private readonly AppDbContext _db;
 
     private static readonly Dictionary<long, long> ActiveGames = new();
 
-    public UpdateHandler(IGameService gameService, GameRepository repo)
+    public UpdateHandler(IGameService gameService, AppDbContext db)
     {
         _gameService = gameService;
-        _repo = repo;
+        //_repo = repo;
+        _db = db;
     }
 
     public async Task HandleUpdateAsync(
@@ -28,6 +31,7 @@ internal class UpdateHandler
         CancellationToken ct
     )
     {
+        // message
         if (update.Type == UpdateType.Message)
         {
             var msg = update.Message!;
@@ -90,8 +94,10 @@ internal class UpdateHandler
             {
                 if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
 
-                var game = await _repo.Get(gameId);
-                var player = _gameService.GetPlayer(game!);
+                var game = await _db.GameSessions.FindAsync(gameId);
+                if (game == null) return;
+                //var game = await _repo.Get(gameId);
+                var player = _gameService.GetPlayer(game);
 
                 var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
 
@@ -101,11 +107,18 @@ internal class UpdateHandler
             // NEXT PLAYER
             if (msg.Text == "/next")
             {
-                var gameId = ActiveGames[chatId];
-                var game = await _repo.Get(gameId);
+                if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
 
-                _gameService.NextPlayer(game!);
-                await _repo.Update(game!);
+                var game = await _db.GameSessions.FindAsync(gameId);
+                if (game == null) return;
+                //var gameId = ActiveGames[chatId];
+                //var game = await _repo.Get(gameId);
+
+                _gameService.NextPlayer(game);
+
+                //game.CurrentPlayerIndex++;
+                await _db.SaveChangesAsync();
+                //await _repo.Update(game!);
 
                 if (game!.Status == "finished")
                 {
@@ -122,21 +135,27 @@ internal class UpdateHandler
         {
             var query = update.CallbackQuery!;
             var chatId = query.Message!.Chat.Id;
-            var data = query.Data;
+            //var data = query.Data;
 
-            if (data!.StartsWith("players_"))
+            if (query.Data!.StartsWith("players_"))
             {
-                var count = int.Parse(data.Replace("players_", ""));
+                var count = int.Parse(query.Data.Replace("players_", ""));
 
                 await bot.AnswerCallbackQuery(query.Id);
 
-                await bot.SendMessage(chatId, $"Вы выбрали {count} игроков");
+                //await bot.SendMessage(chatId, $"Вы выбрали {count} игроков");
 
                 // Создаем игру
                 var game = _gameService.CreateGame(count);
-                var gameId = await _repo.Create(game);
 
-                ActiveGames[chatId] = gameId;
+                _db.GameSessions.Add(game);
+                await _db.SaveChangesAsync();
+
+                //var gameId = game.Id;
+
+                //var gameId = await _repo.Create(game);
+
+                ActiveGames[chatId] = game.Id;
 
                 await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}\nНажмите /show");
             }
@@ -145,12 +164,7 @@ internal class UpdateHandler
         }
     }
 
-    public Task HandleErrorAsync(
-        ITelegramBotClient bot,
-        Exception exception,
-        HandleErrorSource source,
-        CancellationToken ct
-    )
+    public Task HandleErrorAsync(ITelegramBotClient bot, Exception exception, HandleErrorSource source, CancellationToken ct)
     {
         Console.WriteLine(exception);
         return Task.CompletedTask;

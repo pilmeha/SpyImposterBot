@@ -11,7 +11,7 @@ using SpyImposterBot.Database;
 namespace SpyImposterBot.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260327185925_InitialCreate")]
+    [Migration("20260415193419_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -52,7 +52,7 @@ namespace SpyImposterBot.Migrations
 
                     b.Property<string>("PlayersData")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("jsonb")
                         .HasColumnName("players_data");
 
                     b.Property<string>("Status")
