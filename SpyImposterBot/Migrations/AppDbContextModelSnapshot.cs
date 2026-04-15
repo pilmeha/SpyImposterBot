@@ -25,34 +25,41 @@ namespace SpyImposterBot.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by");
 
                     b.Property<int>("CurrentPlayerIndex")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("current_player_index");
 
                     b.Property<string>("GameMode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("game_mode");
 
                     b.Property<long>("PackId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("pack_id");
 
                     b.Property<string>("PlayersData")
                         .IsRequired()
-                        .HasColumnType("jsonb");
+                        .HasColumnType("jsonb")
+                        .HasColumnName("players_data");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("status");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GameSessions");
+                    b.ToTable("game_sessions", (string)null);
                 });
 
             modelBuilder.Entity("User", b =>
@@ -74,7 +81,7 @@ namespace SpyImposterBot.Migrations
                     b.HasIndex("TelegramId")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Word", b =>
@@ -95,7 +102,7 @@ namespace SpyImposterBot.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Words");
+                    b.ToTable("words", (string)null);
                 });
 
             modelBuilder.Entity("WordPack", b =>
@@ -118,7 +125,7 @@ namespace SpyImposterBot.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WordPacks");
+                    b.ToTable("word_packs", (string)null);
                 });
 #pragma warning restore 612, 618
         }

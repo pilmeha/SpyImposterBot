@@ -12,25 +12,25 @@ namespace SpyImposterBot.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "GameSessions",
+                name: "game_sessions",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatedBy = table.Column<long>(type: "bigint", nullable: false),
-                    PackId = table.Column<long>(type: "bigint", nullable: false),
-                    GameMode = table.Column<string>(type: "text", nullable: false),
-                    PlayersData = table.Column<string>(type: "jsonb", nullable: false),
-                    CurrentPlayerIndex = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false)
+                    created_by = table.Column<long>(type: "bigint", nullable: false),
+                    pack_id = table.Column<long>(type: "bigint", nullable: false),
+                    game_mode = table.Column<string>(type: "text", nullable: false),
+                    players_data = table.Column<string>(type: "jsonb", nullable: false),
+                    current_player_index = table.Column<int>(type: "integer", nullable: false),
+                    status = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameSessions", x => x.Id);
+                    table.PrimaryKey("PK_game_sessions", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "users",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -40,11 +40,11 @@ namespace SpyImposterBot.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WordPacks",
+                name: "word_packs",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -55,11 +55,11 @@ namespace SpyImposterBot.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WordPacks", x => x.Id);
+                    table.PrimaryKey("PK_word_packs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Words",
+                name: "words",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -69,12 +69,12 @@ namespace SpyImposterBot.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Words", x => x.Id);
+                    table.PrimaryKey("PK_words", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_TelegramId",
-                table: "Users",
+                name: "IX_users_TelegramId",
+                table: "users",
                 column: "TelegramId",
                 unique: true);
         }
@@ -83,16 +83,16 @@ namespace SpyImposterBot.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "GameSessions");
+                name: "game_sessions");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "users");
 
             migrationBuilder.DropTable(
-                name: "WordPacks");
+                name: "word_packs");
 
             migrationBuilder.DropTable(
-                name: "Words");
+                name: "words");
         }
     }
 }

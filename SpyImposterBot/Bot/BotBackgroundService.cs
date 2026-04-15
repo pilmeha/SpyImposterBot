@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -7,12 +8,13 @@ using Telegram.Bot.Types.Enums;
 internal class BotBackgroundService : BackgroundService
 {
     private readonly ITelegramBotClient _bot;
-    private readonly UpdateHandler _handler;
+    //private readonly UpdateHandler _handler;
+    private readonly IServiceProvider _provide;
 
-    public BotBackgroundService(ITelegramBotClient bot, UpdateHandler handler)
+    public BotBackgroundService(ITelegramBotClient bot, IServiceProvider provide)
     {
         _bot = bot;
-        _handler = handler;
+        _provide = provide;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -20,9 +22,11 @@ internal class BotBackgroundService : BackgroundService
         var receiverOptions = new ReceiverOptions();
 
         _bot.StartReceiving(
-            async (bot, update, ct) => await _handler.HandleUpdateAsync(bot, update, ct),
-            async (bot, exception, source, ct) => await _handler.HandleErrorAsync(bot, exception, source, ct),
-            receiverOptions,
+            HandleUpdateAsync,
+            HandleErrorAsync,
+            //async (bot, update, ct) => await _handler.HandleUpdateAsync(bot, update, ct),
+            //async (bot, exception, source, ct) => await _handler.HandleErrorAsync(bot, exception, source, ct),
+            //receiverOptions,
             cancellationToken: stoppingToken
         );
 
@@ -30,6 +34,28 @@ internal class BotBackgroundService : BackgroundService
         Console.WriteLine($"Bot @{me.Username} started");
 
         await Task.Delay(-1, stoppingToken);
+    }
+
+    private async Task HandleUpdateAsync(
+        ITelegramBotClient bot, 
+        Update update,
+        CancellationToken ct)
+    {
+        using var scope = _provide.CreateScope();
+
+        var handler = scope.ServiceProvider.GetRequiredService<UpdateHandler>();
+
+        await handler.HandleUpdateAsync(bot, update, ct);
+    }
+
+    private Task HandleErrorAsync(
+        ITelegramBotClient bot,
+        Exception exception,
+        Telegram.Bot.Polling.HandleErrorSource source,
+        CancellationToken ct)
+    {
+        Console.WriteLine(exception);
+        return Task.CompletedTask;
     }
     
 }

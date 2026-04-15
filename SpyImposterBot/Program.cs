@@ -67,17 +67,12 @@ var builder = Host.CreateDefaultBuilder(args)
             options.UseNpgsql(connection)
         );
 
-        // Dapper
-        services.AddSingleton<IDbConnectionFactory>(_ =>
-            new DbConnectionFactory(connection)
-        );
-
         // Services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IGameService, GameService>();
 
         // Handler
-        services.AddSingleton<UpdateHandler>();
+        services.AddScoped<UpdateHandler>();
 
         // Background bot
         services.AddHostedService<BotBackgroundService>();

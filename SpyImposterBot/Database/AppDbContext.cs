@@ -17,6 +17,23 @@ namespace SpyImposterBot.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<GameSession>(entity =>
+            {
+                entity.ToTable("game_sessions");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+                entity.Property(e => e.PackId).HasColumnName("pack_id");
+                entity.Property(e => e.GameMode).HasColumnName("game_mode");
+                entity.Property(e => e.PlayersData).HasColumnName("players_data");
+                entity.Property(e => e.CurrentPlayerIndex).HasColumnName("current_player_index");
+                entity.Property(e => e.Status).HasColumnName("status");
+            });
+
+            modelBuilder.Entity<User>().ToTable("users");
+            modelBuilder.Entity<Word>().ToTable("words");
+            modelBuilder.Entity<WordPack>().ToTable("word_packs");
+
             modelBuilder.Entity<User>()
                 .HasIndex(x => x.TelegramId)
                 .IsUnique();
