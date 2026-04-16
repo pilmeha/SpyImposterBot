@@ -90,43 +90,46 @@ internal class UpdateHandler
                 await bot.SendMessage(chatId, "Выбери количество игроков!", replyMarkup: keyboardPlayerCount);
             }
 
-            // SHOW WORD
-            if (msg.Text == "/show")
-            {
-                if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
+            //// SHOW WORD
+            //if (msg.Text == "/show")
+            //{
+            //    if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
 
-                var game = await _db.GameSessions.FindAsync(gameId);
-                if (game == null) return;
-                var player = _gameService.GetPlayer(game);
+            //    var game = await _db.GameSessions.FindAsync(gameId);
+            //    if (game == null) return;
+            //    var player = _gameService.GetPlayer(game);
 
-                var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
+            //    var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
 
-                await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
-                //await bot.SendMessage(chatId, "Игрок n\n" + text + "\n\n/next");
+            //    var sentMessage = await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
+            //    var messageIdToDelete = sentMessage.MessageId;
+            //    await bot.DeleteMessage(chatId, messageIdToDelete);
+            //    //await bot.SendMessage(chatId, "Игрок n\n" + text + "\n\n/next");
+            //}
 
-            }
+            //// NEXT PLAYER
+            //if (msg.Text == "/next")
+            //{
+            //    if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
 
-            // NEXT PLAYER
-            if (msg.Text == "/next")
-            {
-                if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
+            //    var game = await _db.GameSessions.FindAsync(gameId);
+            //    if (game == null) return;
 
-                var game = await _db.GameSessions.FindAsync(gameId);
-                if (game == null) return;
+            //    _gameService.NextPlayer(game);
 
-                _gameService.NextPlayer(game);
+            //    await _db.SaveChangesAsync();
 
-                await _db.SaveChangesAsync();
+            //    if (game!.Status == "finished")
+            //    {
+            //        await bot.SendMessage(chatId, "Игра окончена 👾");
+            //        return;
+            //    }
 
-                if (game!.Status == "finished")
-                {
-                    await bot.SendMessage(chatId, "Игра окончена 👾");
-                    return;
-                }
-
-                await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
-                //await bot.SendMessage(chatId, "Передайте телефон следующему игроку\n\n/show");
-            }
+            //    var sentMessage = await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
+            //    var messageIdToDelete = sentMessage.MessageId;
+            //    await bot.DeleteMessage(chatId, messageIdToDelete);
+            //    //await bot.SendMessage(chatId, "Передайте телефон следующему игроку\n\n/show");
+            //}
         }
 
         // callback
@@ -153,6 +156,9 @@ internal class UpdateHandler
                 ActiveGames[chatId] = game.Id;
 
                 await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}", replyMarkup: keyboardShow);
+                //var sentMessage = await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}", replyMarkup: keyboardShow);
+                //var messageIdToDelete = sentMessage.MessageId;
+                //await bot.DeleteMessage(chatId, messageIdToDelete);
                 //await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}\nНажмите /show");
             }
 
@@ -166,7 +172,9 @@ internal class UpdateHandler
 
                 var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
 
-                await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
+                var sentMessage = await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
+                var messageIdToDelete = sentMessage.MessageId;
+                await bot.DeleteMessage(chatId, messageIdToDelete);
             }
 
             if (query.Data!.StartsWith("next"))
@@ -186,7 +194,9 @@ internal class UpdateHandler
                     return;
                 }
 
-                await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
+                var sentMessage = await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
+                var messageIdToDelete = sentMessage.MessageId;
+                await bot.DeleteMessage(chatId, messageIdToDelete);
             }
 
             return;
