@@ -11,9 +11,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 internal class UpdateHandler
 {
-    //private readonly IUserService _userService;
     private readonly IGameService _gameService;
-    //private readonly GameRepository _repo;
     private readonly AppDbContext _db;
 
     private static readonly Dictionary<long, long> ActiveGames = new();
@@ -21,7 +19,6 @@ internal class UpdateHandler
     public UpdateHandler(IGameService gameService, AppDbContext db)
     {
         _gameService = gameService;
-        //_repo = repo;
         _db = db;
     }
 
@@ -96,7 +93,6 @@ internal class UpdateHandler
 
                 var game = await _db.GameSessions.FindAsync(gameId);
                 if (game == null) return;
-                //var game = await _repo.Get(gameId);
                 var player = _gameService.GetPlayer(game);
 
                 var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
@@ -111,14 +107,10 @@ internal class UpdateHandler
 
                 var game = await _db.GameSessions.FindAsync(gameId);
                 if (game == null) return;
-                //var gameId = ActiveGames[chatId];
-                //var game = await _repo.Get(gameId);
 
                 _gameService.NextPlayer(game);
 
-                //game.CurrentPlayerIndex++;
                 await _db.SaveChangesAsync();
-                //await _repo.Update(game!);
 
                 if (game!.Status == "finished")
                 {
@@ -135,7 +127,6 @@ internal class UpdateHandler
         {
             var query = update.CallbackQuery!;
             var chatId = query.Message!.Chat.Id;
-            //var data = query.Data;
 
             if (query.Data!.StartsWith("players_"))
             {
@@ -143,17 +134,11 @@ internal class UpdateHandler
 
                 await bot.AnswerCallbackQuery(query.Id);
 
-                //await bot.SendMessage(chatId, $"Вы выбрали {count} игроков");
-
                 // Создаем игру
                 var game = _gameService.CreateGame(count);
 
                 _db.GameSessions.Add(game);
                 await _db.SaveChangesAsync();
-
-                //var gameId = game.Id;
-
-                //var gameId = await _repo.Create(game);
 
                 ActiveGames[chatId] = game.Id;
 
