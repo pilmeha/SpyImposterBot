@@ -31,60 +31,18 @@ internal class UpdateHandler
             var msg = update.Message!;
             var chatId = msg.Chat.Id;
 
-            var keyboard1 = new ReplyKeyboardMarkup(
-                new[]
-                {
-                    new KeyboardButton[] {"Первая кнопка", "Вторая кнопка" },
-                    new KeyboardButton[] { "Третья кнопка " },
-                }
-            )
-            {
-                ResizeKeyboard = true
-            };
-
-            var keyboardPlayerCount = new InlineKeyboardMarkup(new[]
-            {
-                new[]
-                {
-                    InlineKeyboardButton.WithCallbackData("3", "players_3"),
-                    InlineKeyboardButton.WithCallbackData("4", "players_4"),
-                    InlineKeyboardButton.WithCallbackData("5", "players_5"),
-                    InlineKeyboardButton.WithCallbackData("6", "players_6"),
-                },
-                new[]
-                {
-                    InlineKeyboardButton.WithCallbackData("7", "players_7"),
-                    InlineKeyboardButton.WithCallbackData("8", "players_8"),
-                    InlineKeyboardButton.WithCallbackData("9", "players_9"),
-                    InlineKeyboardButton.WithCallbackData("10", "players_10"),
-                },
-            });
-
-            var keyboarGameType = new InlineKeyboardMarkup(
-                new[]
-                {
-                    new InlineKeyboardButton[] { "Классика" },
-                    new InlineKeyboardButton[] { "Мемы" },
-                    new InlineKeyboardButton[] { "Грави Фолз" },
-                    new InlineKeyboardButton[] { "Парные слова" },
-                    new InlineKeyboardButton[] { "Подборки слов" },
-                }
-            );
-
-            //var keyboardShow = new InlineKeyboardButton("Показать", "show");
-            //var keyboardNext = new InlineKeyboardButton("Следующий", "next");
-
-
             // START
             if (msg.Text == "/start")
             {
                 await bot.SendMessage(chatId, "Привет! Это игра в шпиона");
+                //await bot.SendMessage(chatId, "Выберите действие:", replyMarkup: Keyboards.MainMenu);
+                //await bot.SendMessage(chatId, "Выберите режим:", replyMarkup: Keyboards.GameType);
             }
 
             // CREATE GAME
             if (msg.Text == "/newgame")
             {
-                await bot.SendMessage(chatId, "Выбери количество игроков!", replyMarkup: keyboardPlayerCount);
+                await bot.SendMessage(chatId, "Выбери количество игроков!", replyMarkup: Keyboards.PlayerCount);
             }
 
             //// SHOW WORD
@@ -132,9 +90,6 @@ internal class UpdateHandler
         // callback
         if (update.Type == UpdateType.CallbackQuery)
         {
-            //var keyboardShow = new InlineKeyboardButton("Показать", "show");
-            //var keyboardNext = new InlineKeyboardButton("Следующий", "next");
-
             var query = update.CallbackQuery!;
             var chatId = query.Message!.Chat.Id;
 
@@ -152,19 +107,12 @@ internal class UpdateHandler
 
                 ActiveGames[chatId] = game.Id;
 
-                //await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}", replyMarkup: keyboardShow);
-
                 await SendAndReplaceMessage(
                     bot,
                     chatId,
                     $"Игра создана. Игроков: {count}",
                     Keyboards.Show
                     );
-
-                //var sentMessage = await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}", replyMarkup: keyboardShow);
-                //var messageIdToDelete = sentMessage.MessageId;
-                //await bot.DeleteMessage(chatId, messageIdToDelete);
-                //await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}\nНажмите /show");
             }
 
             if (query.Data!.StartsWith("show"))
@@ -183,10 +131,6 @@ internal class UpdateHandler
                     "Игрок n \n" + text,
                     Keyboards.Next
                     );
-
-                //var sentMessage = await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
-                //var messageIdToDelete = sentMessage.MessageId;
-                //await bot.DeleteMessage(chatId, messageIdToDelete);
             }
 
             if (query.Data!.StartsWith("next"))
@@ -202,7 +146,6 @@ internal class UpdateHandler
 
                 if (game!.Status == "finished")
                 {
-                    //await bot.SendMessage(chatId, "Игра окончена 👾");
                     await SendAndReplaceMessage(
                         bot,
                         chatId,
@@ -214,13 +157,9 @@ internal class UpdateHandler
                 await SendAndReplaceMessage(
                     bot,
                     chatId,
-                    "Передайте телефо следующему игроку",
+                    "Передайте телефон следующему игроку",
                     Keyboards.Show
                     );
-
-                //var sentMessage = await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
-                //var messageIdToDelete = sentMessage.MessageId;
-                //await bot.DeleteMessage(chatId, messageIdToDelete);
             }
 
             return;
