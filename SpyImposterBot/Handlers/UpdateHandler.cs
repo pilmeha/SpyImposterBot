@@ -15,6 +15,7 @@ internal class UpdateHandler
     private readonly AppDbContext _db;
 
     private static readonly Dictionary<long, long> ActiveGames = new();
+    private static readonly Dictionary<long, int> LastMessageIds = new();
 
     public UpdateHandler(IGameService gameService, AppDbContext db)
     {
@@ -22,11 +23,7 @@ internal class UpdateHandler
         _db = db;
     }
 
-    public async Task HandleUpdateAsync(
-        ITelegramBotClient bot, 
-        Update update, 
-        CancellationToken ct
-    )
+    public async Task HandleUpdateAsync(ITelegramBotClient bot, Update update, CancellationToken ct)
     {
         // message
         if (update.Type == UpdateType.Message)
@@ -135,8 +132,8 @@ internal class UpdateHandler
         // callback
         if (update.Type == UpdateType.CallbackQuery)
         {
-            var keyboardShow = new InlineKeyboardButton("Показать", "show");
-            var keyboardNext = new InlineKeyboardButton("Следующий", "next");
+            //var keyboardShow = new InlineKeyboardButton("Показать", "show");
+            //var keyboardNext = new InlineKeyboardButton("Следующий", "next");
 
             var query = update.CallbackQuery!;
             var chatId = query.Message!.Chat.Id;
@@ -155,7 +152,17 @@ internal class UpdateHandler
 
                 ActiveGames[chatId] = game.Id;
 
-                await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}", replyMarkup: keyboardShow);
+                //await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}", replyMarkup: keyboardShow);
+
+                await SendAndReplaceMessage(
+                    bot,
+                    chatId,
+                    $"Игра создана. Игроков: {count}",
+                    new InlineKeyboardMarkup(
+                        InlineKeyboardButton.WithCallbackData("Показать", "show")
+                        )
+                    );
+
                 //var sentMessage = await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}", replyMarkup: keyboardShow);
                 //var messageIdToDelete = sentMessage.MessageId;
                 //await bot.DeleteMessage(chatId, messageIdToDelete);
@@ -172,9 +179,18 @@ internal class UpdateHandler
 
                 var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
 
-                var sentMessage = await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
-                var messageIdToDelete = sentMessage.MessageId;
-                await bot.DeleteMessage(chatId, messageIdToDelete);
+                await SendAndReplaceMessage(
+                    bot,
+                    chatId,
+                    "Игрок n \n" + text,
+                    new InlineKeyboardMarkup(
+                        InlineKeyboardButton.WithCallbackData("Следующий", "show")
+                        )
+                    );
+
+                //var sentMessage = await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
+                //var messageIdToDelete = sentMessage.MessageId;
+                //await bot.DeleteMessage(chatId, messageIdToDelete);
             }
 
             if (query.Data!.StartsWith("next"))
@@ -194,13 +210,38 @@ internal class UpdateHandler
                     return;
                 }
 
-                var sentMessage = await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
-                var messageIdToDelete = sentMessage.MessageId;
-                await bot.DeleteMessage(chatId, messageIdToDelete);
+                await SendAndReplaceMessage(
+                    bot,
+                    chatId,
+                    "Передайте телефо следующему игроку",
+                    new InlineKeyboardMarkup(
+                        InlineKeyboardButton.WithCallbackData("Показать", "show")
+                        )
+                    );
+
+                //var sentMessage = await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
+                //var messageIdToDelete = sentMessage.MessageId;
+                //await bot.DeleteMessage(chatId, messageIdToDelete);
             }
 
             return;
         }
+    }
+
+    async Task SendAndReplaceMessage(ITelegramBotClient bot, long chatId, string text, ReplyMarkup? keyboard = null)
+    {
+        if (LastMessageIds.TryGetValue(chatId, out var oldMsgId))
+        {
+            try
+            {
+                await bot.DeleteMessage(chatId, oldMsgId);
+            }
+            catch { }
+        }
+
+        var msg = await bot.SendMessage(chatId, text, replyMarkup: keyboard);
+
+        LastMessageIds[chatId] = msg.MessageId;
     }
 
     public Task HandleErrorAsync(ITelegramBotClient bot, Exception exception, HandleErrorSource source, CancellationToken ct)
