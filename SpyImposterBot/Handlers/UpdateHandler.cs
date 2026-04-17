@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using SpyImposterBot.Database;
+using SpyImposterBot.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -35,8 +36,6 @@ internal class UpdateHandler
             if (msg.Text == "/start")
             {
                 await bot.SendMessage(chatId, "Привет! Это игра в шпиона");
-                //await bot.SendMessage(chatId, "Выберите действие:", replyMarkup: Keyboards.MainMenu);
-                //await bot.SendMessage(chatId, "Выберите режим:", replyMarkup: Keyboards.GameType);
             }
 
             // CREATE GAME
@@ -123,7 +122,7 @@ internal class UpdateHandler
                 if (game == null) return;
                 var player = _gameService.GetPlayer(game);
 
-                var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
+                var text = player.Role == Role.Spy ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
 
                 await SendAndReplaceMessage(
                     bot,
@@ -144,7 +143,7 @@ internal class UpdateHandler
 
                 await _db.SaveChangesAsync();
 
-                if (game!.Status == "finished")
+                if (game!.Status == GameStatus.finished)
                 {
                     await SendAndReplaceMessage(
                         bot,
