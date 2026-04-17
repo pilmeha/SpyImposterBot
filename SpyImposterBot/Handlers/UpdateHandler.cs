@@ -71,8 +71,8 @@ internal class UpdateHandler
                 }
             );
 
-            var keyboardShow = new InlineKeyboardButton("Показать", "show");
-            var keyboardNext = new InlineKeyboardButton("Следующий", "next");
+            //var keyboardShow = new InlineKeyboardButton("Показать", "show");
+            //var keyboardNext = new InlineKeyboardButton("Следующий", "next");
 
 
             // START
@@ -158,9 +158,7 @@ internal class UpdateHandler
                     bot,
                     chatId,
                     $"Игра создана. Игроков: {count}",
-                    new InlineKeyboardMarkup(
-                        InlineKeyboardButton.WithCallbackData("Показать", "show")
-                        )
+                    Keyboards.Show
                     );
 
                 //var sentMessage = await bot.SendMessage(chatId, $"Игра создана. Игроков: {count}", replyMarkup: keyboardShow);
@@ -183,9 +181,7 @@ internal class UpdateHandler
                     bot,
                     chatId,
                     "Игрок n \n" + text,
-                    new InlineKeyboardMarkup(
-                        InlineKeyboardButton.WithCallbackData("Следующий", "show")
-                        )
+                    Keyboards.Next
                     );
 
                 //var sentMessage = await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
@@ -206,7 +202,12 @@ internal class UpdateHandler
 
                 if (game!.Status == "finished")
                 {
-                    await bot.SendMessage(chatId, "Игра окончена 👾");
+                    //await bot.SendMessage(chatId, "Игра окончена 👾");
+                    await SendAndReplaceMessage(
+                        bot,
+                        chatId,
+                        "Игра окончена 👾"
+                        );
                     return;
                 }
 
@@ -214,9 +215,7 @@ internal class UpdateHandler
                     bot,
                     chatId,
                     "Передайте телефо следующему игроку",
-                    new InlineKeyboardMarkup(
-                        InlineKeyboardButton.WithCallbackData("Показать", "show")
-                        )
+                    Keyboards.Show
                     );
 
                 //var sentMessage = await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
