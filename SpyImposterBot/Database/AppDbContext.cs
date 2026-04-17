@@ -27,7 +27,7 @@ namespace SpyImposterBot.Database
                 entity.Property(e => e.GameMode).HasColumnName("game_mode");
                 entity.Property(e => e.PlayersData).HasColumnName("players_data");
                 entity.Property(e => e.CurrentPlayerIndex).HasColumnName("current_player_index");
-                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.Status).HasConversion<string>().HasColumnName("status");
             });
 
             modelBuilder.Entity<User>().ToTable("users");

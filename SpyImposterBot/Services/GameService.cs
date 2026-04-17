@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using SpyImposterBot.Enums;
+using System.Text.Json;
 
 internal class GameService : IGameService
 {
@@ -23,7 +24,7 @@ internal class GameService : IGameService
             {
                 players.Add(new GamePlayer
                 {
-                    Role = "spy",
+                    Role = Role.Spy,
                     Word = null
                 });
             }
@@ -31,7 +32,7 @@ internal class GameService : IGameService
             {
                 players.Add(new GamePlayer
                 {
-                    Role = "civilian",
+                    Role = Role.Civilian,
                     Word = word
                 });
             }
@@ -44,7 +45,7 @@ internal class GameService : IGameService
             PlayersData = JsonSerializer.Serialize(state),
             CurrentPlayerIndex = 0,
             GameMode = "classic",
-            Status = "in_progress"
+            Status = GameStatus.in_progress
         };
     }
 
@@ -60,7 +61,7 @@ internal class GameService : IGameService
         game.CurrentPlayerIndex++;
         if (game.CurrentPlayerIndex >= state.Players.Count)
         {
-            game.Status = "finished";
+            game.Status = GameStatus.finished;
         }
     }
 }

@@ -8,7 +8,6 @@ using Telegram.Bot.Types.Enums;
 internal class BotBackgroundService : BackgroundService
 {
     private readonly ITelegramBotClient _bot;
-    //private readonly UpdateHandler _handler;
     private readonly IServiceProvider _provide;
 
     public BotBackgroundService(ITelegramBotClient bot, IServiceProvider provide)
@@ -24,9 +23,6 @@ internal class BotBackgroundService : BackgroundService
         _bot.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
-            //async (bot, update, ct) => await _handler.HandleUpdateAsync(bot, update, ct),
-            //async (bot, exception, source, ct) => await _handler.HandleErrorAsync(bot, exception, source, ct),
-            //receiverOptions,
             cancellationToken: stoppingToken
         );
 
