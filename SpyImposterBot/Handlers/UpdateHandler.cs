@@ -51,79 +51,84 @@ internal class UpdateHandler
             var query = update.CallbackQuery!;
             var chatId = query.Message!.Chat.Id;
 
-            const string PlayersPrefix = "players_";
+            var callbacks = new Callbacks(_gameService, _db, bot, update, ct);
+
+            //const string PlayersPrefix = "players_";
             if (query.Data!.StartsWith("players_"))
             {
-                var count = int.Parse(query.Data!.AsSpan(PlayersPrefix.Length));
-                //var count = int.Parse(query.Data.Replace("players_", ""));
+                callbacks.PlayersCountQueryCallback(query, chatId);
+                //var count = int.Parse(query.Data!.AsSpan(PlayersPrefix.Length));
+                ////var count = int.Parse(query.Data.Replace("players_", ""));
 
-                await bot.AnswerCallbackQuery(query.Id);
+                //await bot.AnswerCallbackQuery(query.Id);
 
-                // Создаем игру
-                var game = _gameService.CreateGame(count);
+                //// Создаем игру
+                //var game = _gameService.CreateGame(count);
 
-                _db.GameSessions.Add(game);
-                await _db.SaveChangesAsync();
+                //_db.GameSessions.Add(game);
+                //await _db.SaveChangesAsync();
 
-                ActiveGames[chatId] = game.Id;
+                //ActiveGames[chatId] = game.Id;
 
-                await SendAndReplaceMessage(
-                    bot,
-                    chatId,
-                    $"Игра создана. Игроков: {count}",
-                    Keyboards.Show
-                    );
+                //await SendAndReplaceMessage(
+                //    bot,
+                //    chatId,
+                //    $"Игра создана. Игроков: {count}",
+                //    Keyboards.Show
+                //    );
             }
 
             else if (query.Data == "show")
             {
-                if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
+                callbacks.ShowPlayerFunc(query, chatId);
+                //if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
 
-                var game = await _db.GameSessions.FindAsync(gameId);
-                if (game == null) return;
-                var player = _gameService.GetPlayer(game);
+                //var game = await _db.GameSessions.FindAsync(gameId);
+                //if (game == null) return;
+                //var player = _gameService.GetPlayer(game);
 
-                var text = player.Role == Role.Spy ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
-                var playerNumber = game.CurrentPlayerIndex + 1;
+                //var text = player.Role == Role.Spy ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
+                //var playerNumber = game.CurrentPlayerIndex + 1;
 
-                await SendAndReplaceMessage(
-                    bot,
-                    chatId,
-                    "Игрок " + playerNumber + "\n" + text,
-                    Keyboards.Next
-                    );
+                //await SendAndReplaceMessage(
+                //    bot,
+                //    chatId,
+                //    "Игрок " + playerNumber + "\n" + text,
+                //    Keyboards.Next
+                //    );
             }
 
             else if (query.Data == "next")
             {
-                if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
+                callbacks.NextPlayerFunc(query, chatId);
+                //    if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
 
-                var game = await _db.GameSessions.FindAsync(gameId);
-                if (game == null) return;
+                //    var game = await _db.GameSessions.FindAsync(gameId);
+                //    if (game == null) return;
 
-                _gameService.NextPlayer(game);
+                //    _gameService.NextPlayer(game);
 
-                await _db.SaveChangesAsync();
+                //    await _db.SaveChangesAsync();
 
-                if (game!.Status == GameStatus.finished)
-                {
-                    await SendAndReplaceMessage(
-                        bot,
-                        chatId,
-                        "Игра окончена 👾"
-                        );
-                    return;
-                }
+                //    if (game!.Status == GameStatus.finished)
+                //    {
+                //        await SendAndReplaceMessage(
+                //            bot,
+                //            chatId,
+                //            "Игра окончена 👾"
+                //            );
+                //        return;
+                //    }
 
-                await SendAndReplaceMessage(
-                    bot,
-                    chatId,
-                    "Передайте телефон следующему игроку",
-                    Keyboards.Show
-                    );
+                //    await SendAndReplaceMessage(
+                //        bot,
+                //        chatId,
+                //        "Передайте телефон следующему игроку",
+                //        Keyboards.Show
+                //        );
             }
 
-            return;
+        return;
         }
     }
 
