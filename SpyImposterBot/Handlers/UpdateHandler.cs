@@ -43,47 +43,6 @@ internal class UpdateHandler
             {
                 await bot.SendMessage(chatId, "Выбери количество игроков!", replyMarkup: Keyboards.PlayerCount);
             }
-
-            //// SHOW WORD
-            //if (msg.Text == "/show")
-            //{
-            //    if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
-
-            //    var game = await _db.GameSessions.FindAsync(gameId);
-            //    if (game == null) return;
-            //    var player = _gameService.GetPlayer(game);
-
-            //    var text = player.Role == "spy" ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
-
-            //    var sentMessage = await bot.SendMessage(chatId, "Игрок n\n" + text, replyMarkup: keyboardNext);
-            //    var messageIdToDelete = sentMessage.MessageId;
-            //    await bot.DeleteMessage(chatId, messageIdToDelete);
-            //    //await bot.SendMessage(chatId, "Игрок n\n" + text + "\n\n/next");
-            //}
-
-            //// NEXT PLAYER
-            //if (msg.Text == "/next")
-            //{
-            //    if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
-
-            //    var game = await _db.GameSessions.FindAsync(gameId);
-            //    if (game == null) return;
-
-            //    _gameService.NextPlayer(game);
-
-            //    await _db.SaveChangesAsync();
-
-            //    if (game!.Status == "finished")
-            //    {
-            //        await bot.SendMessage(chatId, "Игра окончена 👾");
-            //        return;
-            //    }
-
-            //    var sentMessage = await bot.SendMessage(chatId, "Передайте телефон следующему игроку", replyMarkup: keyboardShow);
-            //    var messageIdToDelete = sentMessage.MessageId;
-            //    await bot.DeleteMessage(chatId, messageIdToDelete);
-            //    //await bot.SendMessage(chatId, "Передайте телефон следующему игроку\n\n/show");
-            //}
         }
 
         // callback
@@ -92,9 +51,11 @@ internal class UpdateHandler
             var query = update.CallbackQuery!;
             var chatId = query.Message!.Chat.Id;
 
+            const string PlayersPrefix = "players_";
             if (query.Data!.StartsWith("players_"))
             {
-                var count = int.Parse(query.Data.Replace("players_", ""));
+                var count = int.Parse(query.Data!.AsSpan(PlayersPrefix.Length));
+                //var count = int.Parse(query.Data.Replace("players_", ""));
 
                 await bot.AnswerCallbackQuery(query.Id);
 
@@ -114,7 +75,7 @@ internal class UpdateHandler
                     );
             }
 
-            if (query.Data!.StartsWith("show"))
+            else if (query.Data == "show")
             {
                 if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
 
@@ -123,16 +84,17 @@ internal class UpdateHandler
                 var player = _gameService.GetPlayer(game);
 
                 var text = player.Role == Role.Spy ? "Ты ШПИОН 😈" : $"Твое слово: {player.Word}";
+                var playerNumber = game.CurrentPlayerIndex + 1;
 
                 await SendAndReplaceMessage(
                     bot,
                     chatId,
-                    "Игрок n \n" + text,
+                    "Игрок " + playerNumber + "\n" + text,
                     Keyboards.Next
                     );
             }
 
-            if (query.Data!.StartsWith("next"))
+            else if (query.Data == "next")
             {
                 if (!ActiveGames.TryGetValue(chatId, out var gameId)) return;
 
