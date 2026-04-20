@@ -18,41 +18,26 @@ internal class BotBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var receiverOptions = new ReceiverOptions();
 
         _bot.StartReceiving(
-            HandleUpdateAsync,
-            HandleErrorAsync,
+            async (bot, update, ct) =>
+            {
+                using var scope = _provide.CreateScope();
+                var dispatcher = scope.ServiceProvider.GetRequiredService<UpdateDispatcher>();
+
+                await dispatcher.DispatchAsync(update, ct);
+            },
+            async (bot, ex, ct) =>
+            {
+                Console.WriteLine(ex);
+            },
             cancellationToken: stoppingToken
         );
 
         var me = await _bot.GetMe();
-        Console.WriteLine($"Bot @{me.Username} started");
+        Console.WriteLine($"Bot @{me.Username} (ID: {me.Id}) started");
 
-        await Task.Delay(-1, stoppingToken);
+        await Task.Delay(Timeout.Infinite, stoppingToken);
     }
-
-    private async Task HandleUpdateAsync(
-        ITelegramBotClient bot, 
-        Update update,
-        CancellationToken ct)
-    {
-        using var scope = _provide.CreateScope();
-
-        var handler = scope.ServiceProvider.GetRequiredService<UpdateHandler>();
-
-        await handler.HandleUpdateAsync(bot, update, ct);
-    }
-
-    private Task HandleErrorAsync(
-        ITelegramBotClient bot,
-        Exception exception,
-        Telegram.Bot.Polling.HandleErrorSource source,
-        CancellationToken ct)
-    {
-        Console.WriteLine(exception);
-        return Task.CompletedTask;
-    }
-    
 }
 

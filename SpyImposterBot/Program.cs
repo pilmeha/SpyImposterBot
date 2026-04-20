@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using DotNetEnv;
 using MihaZupan;
 using SpyImposterBot.Database;
+using System.Windows.Input;
 
 Env.Load();
 
@@ -70,9 +71,19 @@ var builder = Host.CreateDefaultBuilder(args)
         // Services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IGameService, GameService>();
+        services.AddScoped<MessageService>();
+        services.AddSingleton<GameSessionStorage>();
 
         // Handler
-        services.AddScoped<UpdateHandler>();
+        //services.AddScoped<UpdateHandler>();
+        services.AddScoped<ICallbackHandler, PlayerCountHandler>();
+        services.AddScoped<ICallbackHandler, ShowHandler>();
+        services.AddScoped<ICallbackHandler, NextHandler>();
+
+        services.AddScoped<ICommandHandler, StartCommandHandler>();
+        services.AddScoped<ICommandHandler, NewGameCommandHandler>();
+
+        services.AddScoped<UpdateDispatcher>();
 
         // Background bot
         services.AddHostedService<BotBackgroundService>();
