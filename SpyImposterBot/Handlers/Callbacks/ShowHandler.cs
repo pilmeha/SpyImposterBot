@@ -15,6 +15,7 @@ internal class ShowHandler : ICallbackHandler
     private readonly GameSessionStorage _storage;
     private readonly ITelegramBotClient _bot;
     private readonly MessageService _msg;
+    private const string SHOWMessage = "show";
 
     public ShowHandler(IGameService gameService, AppDbContext db, GameSessionStorage storage, ITelegramBotClient bot, MessageService msg)
     {
@@ -26,7 +27,7 @@ internal class ShowHandler : ICallbackHandler
     }
 
     public bool CanHandle(Update update)
-        => update.CallbackQuery?.Data == "show";
+        => update.CallbackQuery?.Data == SHOWMessage;
 
     public async Task HandleAsync(Update update, CancellationToken ct)
     {

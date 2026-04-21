@@ -15,6 +15,7 @@ internal class NextHandler : ICallbackHandler
     private readonly GameSessionStorage _storage;
     private readonly ITelegramBotClient _bot;
     private readonly MessageService _msg;
+    private const string NEXTMessage = "next";
 
     public NextHandler(IGameService gameService, AppDbContext db, GameSessionStorage storage, ITelegramBotClient bot, MessageService msg)
     {
@@ -26,7 +27,7 @@ internal class NextHandler : ICallbackHandler
     }
 
     public bool CanHandle(Update update)
-        => update.CallbackQuery?.Data == "next";
+        => update.CallbackQuery?.Data == NEXTMessage;
 
     public async Task HandleAsync(Update update, CancellationToken ct)
     {
@@ -44,7 +45,8 @@ internal class NextHandler : ICallbackHandler
 
         if (game!.Status == GameStatus.finished)
         {
-            await _msg.SendAndReplaceMessage(chatId, $"Игра окончена :3", ct);
+            await _msg.SendAndReplaceMessage(chatId, $"Игра окончена :3", ct, Keyboards.PlayAgain);
+
             return; 
         }
 
