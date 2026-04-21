@@ -1,12 +1,7 @@
 ﻿using SpyImposterBot.Database;
 using SpyImposterBot.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
-
 
 internal class NextHandler : ICallbackHandler
 {

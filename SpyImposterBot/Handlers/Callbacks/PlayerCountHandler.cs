@@ -1,10 +1,6 @@
 ﻿using SpyImposterBot.Database;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 internal class PlayerCountHandler : ICallbackHandler
 {
