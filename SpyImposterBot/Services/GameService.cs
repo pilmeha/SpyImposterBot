@@ -1,47 +1,52 @@
-﻿using SpyImposterBot.Enums;
+﻿using SpyImposterBot.Database;
+using SpyImposterBot.Enums;
 using System.Text.Json;
+using Telegram.Bot.Types;
+using Microsoft.EntityFrameworkCore;
 
 internal class GameService : IGameService
 {
-    private static readonly List<string> Words = new()
+    private readonly AppDbContext _db;
+    public GameService(AppDbContext db) 
     {
-        "Париж", "Самолет", "Школа", "Космос", "Компьютер"
-    };
+        _db = db;
+    }
 
-    public GameSession CreateGame(int playersCount)
+    public async Task<string> GetRandomWordAsync(int packId)
     {
+        var count = await _db.Words.CountAsync(w => w.PackId == packId);
+        var index = new Random().Next(count);
+        return await _db.Words
+            .Where(w => w.PackId == packId)
+            .Skip(index)
+            .Select(w => w.Value)
+            .FirstAsync();
+    }
+
+    public async Task<GameSession> CreateGameAsync(int playersCount, int packId)
+    {
+        var word = await GetRandomWordAsync(packId);
+
         var rnd = new Random();
-
-        var word = Words[rnd.Next(Words.Count)];
-
         var spyIndex = rnd.Next(playersCount);
 
         var players = new List<GamePlayer>();
 
         for (int i = 0; i < playersCount; i++)
         {
-            if (i == spyIndex)
+            players.Add(new GamePlayer
             {
-                players.Add(new GamePlayer
-                {
-                    Role = Role.Spy,
-                    Word = null
-                });
-            }
-            else
-            {
-                players.Add(new GamePlayer
-                {
-                    Role = Role.Civilian,
-                    Word = word
-                });
-            }
+                Role = i == spyIndex ? Role.Spy : Role.Civilian,
+                Word = i == spyIndex ? null : word
+            });
         }
 
-        var state = new GameState { Players =  players };
+        var state = new GameState { Players = players };
 
         return new GameSession
         {
+            PackId = packId,
+            Word = word,
             PlayersData = JsonSerializer.Serialize(state),
             CurrentPlayerIndex = 0,
             GameMode = "classic",

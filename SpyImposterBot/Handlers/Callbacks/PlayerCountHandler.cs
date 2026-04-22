@@ -29,11 +29,17 @@ internal class PlayerCountHandler : ICallbackHandler
         var query = update.CallbackQuery!;
         var chatId = query.Message!.Chat.Id;
 
-        var count = int.Parse(query.Data!.Substring(Prefix.Length));
-
         await _bot.AnswerCallbackQuery(query.Id);
 
-        var game = _gameService.CreateGame(count);
+        var count = int.Parse(query.Data!.Substring(Prefix.Length));
+
+        if (!_storage.SelectedPack.TryGetValue(chatId, out var packId))
+        {
+            await _msg.SendAndReplaceMessage(chatId, "Сначала выбери тему", ct);
+            return;
+        }
+
+        var game = await _gameService.CreateGameAsync(count, (int)packId);
 
         _db.GameSessions.Add(game);
         await _db.SaveChangesAsync(ct);

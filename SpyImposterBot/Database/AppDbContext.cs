@@ -45,6 +45,23 @@ namespace SpyImposterBot.Database
             modelBuilder.Entity<GameSession>()
                 .Property(x => x.PlayersData)
                 .HasColumnType("jsonb");
+
+            modelBuilder.Entity<WordPack>().HasData(
+                new WordPack { Id = 1, Name = "Классика", IsPublic = true },
+                new WordPack { Id = 2, Name = "Мемы", IsPublic = true }
+            );
+
+            modelBuilder.Entity<Word>().HasData(
+                new Word { Id = 1, PackId = 1, Value = "Париж" },
+                new Word { Id = 2, PackId = 1, Value = "Самолет" },
+                new Word { Id = 3, PackId = 1, Value = "Школа" },
+                new Word { Id = 4, PackId = 1, Value = "Космос" },
+                new Word { Id = 5, PackId = 1, Value = "Компьютер" },
+
+                new Word { Id = 6, PackId = 2, Value = "Ждун" },
+                new Word { Id = 7, PackId = 2, Value = "Чел хорош" },
+                new Word { Id = 8, PackId = 2, Value = "Кринж" }
+                );
         }
 
     }

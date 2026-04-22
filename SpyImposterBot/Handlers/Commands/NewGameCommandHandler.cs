@@ -18,9 +18,10 @@ public class NewGameCommandHandler : ICommandHandler
 
     public async Task HandleAsync(Update update, CancellationToken ct)
     {
-        var msg = update.Message!;
-        var chatId = msg.Chat.Id;
+        var chatId = update.Message!.Chat.Id;
 
-        await _msg.SendAndReplaceMessage(chatId, "Выбери количество игроков!", ct, Keyboards.PlayerCount);
+        await _msg.SendAndReplaceMessage(chatId, "Выбери тему:", ct, Keyboards.GameType);
+
+        //await _msg.SendAndReplaceMessage(chatId, "Выбери количество игроков!", ct, Keyboards.PlayerCount);
     }
 }
