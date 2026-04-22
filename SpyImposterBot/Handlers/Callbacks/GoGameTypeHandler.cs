@@ -4,6 +4,8 @@ internal class GoGameTypeHandler : ICallbackHandler
 {
     private readonly GameSessionStorage _storage;
     private readonly MessageService _msg;
+    private const string GOGAMETYPEMessage = "goGameType";
+
 
     public GoGameTypeHandler(GameSessionStorage storage, MessageService msg)
     {
@@ -12,7 +14,7 @@ internal class GoGameTypeHandler : ICallbackHandler
     }
 
     public bool CanHandle(Update update)
-        => update.CallbackQuery?.Data == "goGameType";
+        => update.CallbackQuery?.Data == GOGAMETYPEMessage;
 
     public async Task HandleAsync(Update update, CancellationToken ct)
     {
@@ -21,7 +23,7 @@ internal class GoGameTypeHandler : ICallbackHandler
         _storage.ActiveGames.Remove(chatId);
         _storage.SelectedPack.Remove(chatId);
 
-        await _msg.SendAndReplaceMessage(chatId, "Выбери тему:", ct, Keyboards.GameType);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.ChooseGameType, ct, Keyboards.GameType);
     }
 }
 

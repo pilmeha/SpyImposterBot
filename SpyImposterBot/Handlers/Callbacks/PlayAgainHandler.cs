@@ -21,13 +21,13 @@ internal class PlayAgainHandler : ICallbackHandler
 
         if (!_storage.SelectedPack.ContainsKey(chatId))
         {
-            await _msg.SendAndReplaceMessage(chatId, "Сначала выбери тему", ct, Keyboards.GameType);
+            await _msg.SendAndReplaceMessage(chatId, MessageText.ChooseFirstGameType, ct, Keyboards.GameType);
             return;
         }
 
         _storage.ActiveGames.Remove(chatId);
 
-        await _msg.SendAndReplaceMessage(chatId, "Начнём заново 👇\nВыбери количество игроков:", ct, Keyboards.PlayerCount);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.ChooseCountPlayers, ct, Keyboards.PlayerCount);
     }
 }
 

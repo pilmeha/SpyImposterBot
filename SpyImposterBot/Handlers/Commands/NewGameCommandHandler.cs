@@ -20,8 +20,6 @@ public class NewGameCommandHandler : ICommandHandler
     {
         var chatId = update.Message!.Chat.Id;
 
-        await _msg.SendAndReplaceMessage(chatId, "Выбери тему:", ct, Keyboards.GameType);
-
-        //await _msg.SendAndReplaceMessage(chatId, "Выбери количество игроков!", ct, Keyboards.PlayerCount);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.ChooseGameType, ct, Keyboards.GameType);
     }
 }

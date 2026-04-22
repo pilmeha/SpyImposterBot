@@ -28,7 +28,7 @@ public class GameTypeHandler : ICallbackHandler
 
         _storage.SelectedPack[chatId] = packId;
 
-        await _msg.SendAndReplaceMessage(chatId, "Теперь выбери количество игроков:", ct, Keyboards.PlayerCount);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.ChooseCountPlayers, ct, Keyboards.PlayerCount);
     }
 }
 

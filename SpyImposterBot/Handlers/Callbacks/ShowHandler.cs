@@ -36,11 +36,11 @@ internal class ShowHandler : ICallbackHandler
 
         var player = _gameService.GetPlayer(game);
 
-        var text = player.Role == Role.Spy ? "Ты ШПИОН >)" : $"Твое слово: {player.Word}";
+        var text = player.Role == Role.Spy ? MessageText.Spy : MessageText.Word(player.Word);
 
         var playerNumber = game.CurrentPlayerIndex + 1;
 
-        await _msg.SendAndReplaceMessage(chatId, $"Игрок {playerNumber}\n{text}", ct, Keyboards.Next);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.PlayerTurn(playerNumber) + $"\n{text}", ct, Keyboards.Next);
     }
 }
 

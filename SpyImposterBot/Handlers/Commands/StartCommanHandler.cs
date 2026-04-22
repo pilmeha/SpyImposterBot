@@ -19,7 +19,7 @@ public class StartCommandHandler : ICommandHandler
         var msg = update.Message!;
         var chatId = msg.Chat.Id;
 
-        await _bot.SendMessage(chatId, "Привет! Это игра в шпиона", cancellationToken: ct);
+        await _bot.SendMessage(chatId, MessageText.Start, cancellationToken: ct);
     }
 }
 

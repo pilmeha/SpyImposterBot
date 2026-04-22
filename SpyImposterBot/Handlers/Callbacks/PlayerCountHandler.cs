@@ -35,7 +35,7 @@ internal class PlayerCountHandler : ICallbackHandler
 
         if (!_storage.SelectedPack.TryGetValue(chatId, out var packId))
         {
-            await _msg.SendAndReplaceMessage(chatId, "Сначала выбери тему", ct, Keyboards.GameType);
+            await _msg.SendAndReplaceMessage(chatId, MessageText.ChooseFirstGameType, ct, Keyboards.GameType);
             return;
         }
 
@@ -46,6 +46,6 @@ internal class PlayerCountHandler : ICallbackHandler
 
         _storage.ActiveGames[chatId] = game.Id;
 
-        await _msg.SendAndReplaceMessage(chatId, $"Игра создана. Игроков: {count}", ct, Keyboards.Show);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.GameCreatedWithCountPlayers(count), ct, Keyboards.Show);
     }
 }

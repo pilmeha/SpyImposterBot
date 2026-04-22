@@ -8,12 +8,6 @@ static class Keyboards
     public static InlineKeyboardMarkup Next =>
         new(InlineKeyboardButton.WithCallbackData("Следующий", "next"));
 
-    public static InlineKeyboardMarkup PlayAgain =>
-        new(InlineKeyboardButton.WithCallbackData("Сыграть ещё раз", "playAgain"));
-
-    public static InlineKeyboardMarkup GoGameType =>
-        new(InlineKeyboardButton.WithCallbackData("Вернуться к выбору темы", "goGameType"));
-
     public static InlineKeyboardMarkup PlayAgainMenu =>
           new(new[]
           {
