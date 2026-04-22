@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SpyImposterBot.Enums
+﻿namespace SpyImposterBot.Enums
 {
     public enum GameStatus
     {

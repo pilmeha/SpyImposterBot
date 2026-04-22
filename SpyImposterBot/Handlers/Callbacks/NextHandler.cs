@@ -1,12 +1,7 @@
 ﻿using SpyImposterBot.Database;
 using SpyImposterBot.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
-
 
 internal class NextHandler : ICallbackHandler
 {
@@ -15,6 +10,7 @@ internal class NextHandler : ICallbackHandler
     private readonly GameSessionStorage _storage;
     private readonly ITelegramBotClient _bot;
     private readonly MessageService _msg;
+    private const string NEXTMessage = "next";
 
     public NextHandler(IGameService gameService, AppDbContext db, GameSessionStorage storage, ITelegramBotClient bot, MessageService msg)
     {
@@ -26,7 +22,7 @@ internal class NextHandler : ICallbackHandler
     }
 
     public bool CanHandle(Update update)
-        => update.CallbackQuery?.Data == "next";
+        => update.CallbackQuery?.Data == NEXTMessage;
 
     public async Task HandleAsync(Update update, CancellationToken ct)
     {
@@ -44,11 +40,12 @@ internal class NextHandler : ICallbackHandler
 
         if (game!.Status == GameStatus.finished)
         {
-            await _msg.SendAndReplaceMessage(chatId, $"Игра окончена :3", ct);
+            await _msg.SendAndReplaceMessage(chatId, MessageText.GameFinished, ct, Keyboards.PlayAgainMenu);
+
             return; 
         }
 
-        await _msg.SendAndReplaceMessage(chatId, "Передайте телефон следующему игроку", ct, Keyboards.Show);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.NextPlayer, ct, Keyboards.Show);
     }
 }
 

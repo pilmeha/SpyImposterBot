@@ -9,4 +9,5 @@ internal class GameSession
     public string PlayersData { get; set; } = "";
     public int CurrentPlayerIndex { get; set; }
     public GameStatus Status { get; set; }
+    public string Word { get; set; }
 }

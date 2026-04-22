@@ -1,10 +1,6 @@
 ﻿using SpyImposterBot.Database;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 internal class PlayerCountHandler : ICallbackHandler
 {
@@ -33,17 +29,23 @@ internal class PlayerCountHandler : ICallbackHandler
         var query = update.CallbackQuery!;
         var chatId = query.Message!.Chat.Id;
 
-        var count = int.Parse(query.Data!.Substring(Prefix.Length));
-
         await _bot.AnswerCallbackQuery(query.Id);
 
-        var game = _gameService.CreateGame(count);
+        var count = int.Parse(query.Data!.Substring(Prefix.Length));
+
+        if (!_storage.SelectedPack.TryGetValue(chatId, out var packId))
+        {
+            await _msg.SendAndReplaceMessage(chatId, MessageText.ChooseFirstGameType, ct, Keyboards.GameType);
+            return;
+        }
+
+        var game = await _gameService.CreateGameAsync(count, (int)packId);
 
         _db.GameSessions.Add(game);
         await _db.SaveChangesAsync(ct);
 
         _storage.ActiveGames[chatId] = game.Id;
 
-        await _msg.SendAndReplaceMessage(chatId, $"Игра создана. Игроков: {count}", ct, Keyboards.Show);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.GameCreatedWithCountPlayers(count), ct, Keyboards.Show);
     }
 }

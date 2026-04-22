@@ -8,6 +8,13 @@ static class Keyboards
     public static InlineKeyboardMarkup Next =>
         new(InlineKeyboardButton.WithCallbackData("Следующий", "next"));
 
+    public static InlineKeyboardMarkup PlayAgainMenu =>
+          new(new[]
+          {
+            new [] { InlineKeyboardButton.WithCallbackData("Сыграть ещё раз", "playAgain") },
+            new [] { InlineKeyboardButton.WithCallbackData("Вернуться к выбору темы", "goGameType") },
+          });
+
     public static InlineKeyboardMarkup PlayerCount =>
         new(new[] 
         {
@@ -30,11 +37,11 @@ static class Keyboards
     public static InlineKeyboardMarkup GameType =>
     new(new[]
     {
-            new[] { InlineKeyboardButton.WithCallbackData("Классика", "classicGame") },
-            new[] { InlineKeyboardButton.WithCallbackData("Мемы", "memsGame") },
-            new[] { InlineKeyboardButton.WithCallbackData("Гравити Фолз", "gravityFolsGame") },
-            new[] { InlineKeyboardButton.WithCallbackData("Парные слова", "pairWordsGame") },
-            new[] { InlineKeyboardButton.WithCallbackData("Подборки слов", "wordspackGame") },
+            new[] { InlineKeyboardButton.WithCallbackData("Классика", "pack_1") },
+            new[] { InlineKeyboardButton.WithCallbackData("Мемы", "pack_2") },
+            new[] { InlineKeyboardButton.WithCallbackData("Гравити Фолз", "pack_3") },
+            new[] { InlineKeyboardButton.WithCallbackData("Парные слова", "pack_4") },
+            new[] { InlineKeyboardButton.WithCallbackData("Подборки слов", "pack_5") },
     });
 
     public static ReplyKeyboardMarkup MainMenu =>

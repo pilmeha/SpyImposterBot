@@ -1,6 +1,6 @@
 ﻿internal interface IGameService
 {
-    GameSession CreateGame(int playersCount);
+    Task<GameSession> CreateGameAsync(int playersCount, int packId);
     GamePlayer GetPlayer(GameSession game);
     void NextPlayer(GameSession game);
 }

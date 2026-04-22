@@ -1,12 +1,7 @@
 ﻿using SpyImposterBot.Database;
 using SpyImposterBot.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
-
 
 internal class ShowHandler : ICallbackHandler
 {
@@ -15,6 +10,7 @@ internal class ShowHandler : ICallbackHandler
     private readonly GameSessionStorage _storage;
     private readonly ITelegramBotClient _bot;
     private readonly MessageService _msg;
+    private const string SHOWMessage = "show";
 
     public ShowHandler(IGameService gameService, AppDbContext db, GameSessionStorage storage, ITelegramBotClient bot, MessageService msg)
     {
@@ -26,7 +22,7 @@ internal class ShowHandler : ICallbackHandler
     }
 
     public bool CanHandle(Update update)
-        => update.CallbackQuery?.Data == "show";
+        => update.CallbackQuery?.Data == SHOWMessage;
 
     public async Task HandleAsync(Update update, CancellationToken ct)
     {
@@ -40,11 +36,11 @@ internal class ShowHandler : ICallbackHandler
 
         var player = _gameService.GetPlayer(game);
 
-        var text = player.Role == Role.Spy ? "Ты ШПИОН >)" : $"Твое слово: {player.Word}";
+        var text = player.Role == Role.Spy ? MessageText.Spy : MessageText.Word(player.Word);
 
         var playerNumber = game.CurrentPlayerIndex + 1;
 
-        await _msg.SendAndReplaceMessage(chatId, $"Игрок {playerNumber}\n{text}", ct, Keyboards.Next);
+        await _msg.SendAndReplaceMessage(chatId, MessageText.PlayerTurn(playerNumber) + $"\n{text}", ct, Keyboards.Next);
     }
 }
 
