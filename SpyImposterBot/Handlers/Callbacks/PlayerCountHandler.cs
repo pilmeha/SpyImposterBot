@@ -35,7 +35,7 @@ internal class PlayerCountHandler : ICallbackHandler
 
         if (!_storage.SelectedPack.TryGetValue(chatId, out var packId))
         {
-            await _msg.SendAndReplaceMessage(chatId, "Сначала выбери тему", ct);
+            await _msg.SendAndReplaceMessage(chatId, "Сначала выбери тему", ct, Keyboards.GameType);
             return;
         }
 

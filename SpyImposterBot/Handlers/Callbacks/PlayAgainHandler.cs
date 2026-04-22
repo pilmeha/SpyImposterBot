@@ -17,8 +17,13 @@ internal class PlayAgainHandler : ICallbackHandler
 
     public async Task HandleAsync(Update update, CancellationToken ct)
     {
-        var query = update.CallbackQuery!;
-        var chatId = query.Message!.Chat.Id;
+        var chatId = update.CallbackQuery!.Message!.Chat.Id;
+
+        if (!_storage.SelectedPack.ContainsKey(chatId))
+        {
+            await _msg.SendAndReplaceMessage(chatId, "Сначала выбери тему", ct, Keyboards.GameType);
+            return;
+        }
 
         _storage.ActiveGames.Remove(chatId);
 

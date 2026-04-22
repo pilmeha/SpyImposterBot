@@ -40,7 +40,7 @@ internal class NextHandler : ICallbackHandler
 
         if (game!.Status == GameStatus.finished)
         {
-            await _msg.SendAndReplaceMessage(chatId, $"Игра окончена 👾\n\nХотите сыграть ещё раз?", ct, Keyboards.PlayAgain);
+            await _msg.SendAndReplaceMessage(chatId, $"Игра окончена 👾\n\nХотите сыграть ещё раз?", ct, Keyboards.PlayAgainMenu);
 
             return; 
         }

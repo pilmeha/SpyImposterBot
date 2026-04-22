@@ -81,6 +81,7 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddScoped<ICallbackHandler, ShowHandler>();
         services.AddScoped<ICallbackHandler, NextHandler>();
         services.AddScoped<ICallbackHandler, PlayAgainHandler>();
+        services.AddScoped<ICallbackHandler, GoGameTypeHandler>();
 
         services.AddScoped<ICommandHandler, StartCommandHandler>();
         services.AddScoped<ICommandHandler, NewGameCommandHandler>();
