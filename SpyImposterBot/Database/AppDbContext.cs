@@ -55,8 +55,8 @@ namespace SpyImposterBot.Database
 
             modelBuilder.Entity<WordPack>().HasData(
                 new WordPack { Id = 1, Name = "Классика", IsPublic = true, HasImage = false },
-                new WordPack { Id = 2, Name = "Мемы", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDQ2nqCqRYOei03WQwOZ3j9zocjy-3AALdEmsbeT1ZSzDbq3D730zzAQADAgADeAADOwQ" },
-                new WordPack { Id = 3, Name = "Гравити Фолз", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDQ2nqCqRYOei03WQwOZ3j9zocjy-3AALdEmsbeT1ZSzDbq3D730zzAQADAgADeAADOwQ" }
+                new WordPack { Id = 2, Name = "Мемы", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDcWnqFF73-ck3yCkIGaC-ILiGbz8vAAIfE2sbeT1ZS65DyBa6QXhIAQADAgADeQADOwQ" },
+                new WordPack { Id = 3, Name = "Гравити Фолз", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDcWnqFF73-ck3yCkIGaC-ILiGbz8vAAIfE2sbeT1ZS65DyBa6QXhIAQADAgADeQADOwQ" }
             );
 
             modelBuilder.Entity<Word>().HasData(
