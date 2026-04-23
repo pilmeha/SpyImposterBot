@@ -15,6 +15,15 @@ internal class UpdateDispatcher
 
     public async Task DispatchAsync(Update update, CancellationToken ct)
     {
+        // Image, file, documentc for FileImageId
+        if (update.Message != null && update.Message.Text == null)
+        {
+            foreach (var handler in _commandHandlers)
+            {
+                await handler.HandleAsync(update, ct);
+            }
+        }
+
         // COMMANDS
         if (update.Message?.Text != null)
         {

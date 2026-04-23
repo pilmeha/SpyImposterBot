@@ -12,20 +12,27 @@ internal class GameService : IGameService
         _db = db;
     }
 
-    public async Task<string> GetRandomWordAsync(int packId)
+    public async Task<Word> GetRandomWordAsync(int packId)
     {
         var count = await _db.Words.CountAsync(w => w.PackId == packId);
-        var index = new Random().Next(count);
+
+        if (count == 0)
+            throw new Exception("No words in pack");
+
+        var index = Random.Shared.Next(count);
+
         return await _db.Words
             .Where(w => w.PackId == packId)
             .Skip(index)
-            .Select(w => w.Value)
             .FirstAsync();
     }
 
     public async Task<GameSession> CreateGameAsync(int playersCount, int packId)
     {
-        var word = await GetRandomWordAsync(packId);
+        var pack = await _db.WordPacks.FindAsync((long)packId)
+            ?? throw new Exception("Pack not found");
+
+        var wordEntity = await GetRandomWordAsync(packId);
 
         var rnd = new Random();
         var spyIndex = rnd.Next(playersCount);
@@ -37,7 +44,7 @@ internal class GameService : IGameService
             players.Add(new GamePlayer
             {
                 Role = i == spyIndex ? Role.Spy : Role.Civilian,
-                Word = i == spyIndex ? null : word
+                Word = i == spyIndex ? null : wordEntity.Value
             });
         }
 
@@ -46,10 +53,11 @@ internal class GameService : IGameService
         return new GameSession
         {
             PackId = packId,
-            Word = word,
+            Word = wordEntity.Value,
+            ImageFileId = wordEntity.ImageFileId,
+            HasImages = pack.HasImage,
             PlayersData = JsonSerializer.Serialize(state),
             CurrentPlayerIndex = 0,
-            GameMode = "classic",
             Status = GameStatus.in_progress
         };
     }
@@ -63,10 +71,11 @@ internal class GameService : IGameService
     public void NextPlayer(GameSession game)
     {
         var state = JsonSerializer.Deserialize<GameState>(game.PlayersData)!;
+
         game.CurrentPlayerIndex++;
+
         if (game.CurrentPlayerIndex >= state.Players.Count)
-        {
             game.Status = GameStatus.finished;
-        }
+        
     }
 }

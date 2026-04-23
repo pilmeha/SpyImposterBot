@@ -23,4 +23,16 @@ public class MessageService
 
         _storage.LastMessageIds[chatId] = msg.MessageId;
     }
+
+    public async Task SendAndReplacePhotoMessage(long chatId, string text, string photoFileId, CancellationToken ct, ReplyMarkup? kb = null)
+    {
+        if (_storage.LastMessageIds.TryGetValue(chatId, out var oldId))
+        {
+            try { await _bot.DeleteMessage(chatId, oldId, ct); } catch { }
+        }
+
+        var msg = await _bot.SendPhoto(chatId, photoFileId, caption: text, replyMarkup: kb, cancellationToken: ct);
+
+        _storage.LastMessageIds[chatId] = msg.MessageId;
+    }
 }

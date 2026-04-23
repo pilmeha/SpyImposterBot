@@ -24,10 +24,17 @@ namespace SpyImposterBot.Database
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.CreatedBy).HasColumnName("created_by");
                 entity.Property(e => e.PackId).HasColumnName("pack_id");
-                entity.Property(e => e.GameMode).HasColumnName("game_mode");
-                entity.Property(e => e.PlayersData).HasColumnName("players_data");
+                entity.Property(e => e.PlayersData)
+                    .HasColumnName("players_data")
+                    .HasColumnType("jsonb");
                 entity.Property(e => e.CurrentPlayerIndex).HasColumnName("current_player_index");
-                entity.Property(e => e.Status).HasConversion<string>().HasColumnName("status");
+                entity.Property(e => e.Status)
+                    .HasConversion<string>()
+                    .HasColumnName("status");
+
+                entity.Property(e => e.Word).HasColumnName("word");
+                entity.Property(e => e.ImageFileId).HasColumnName("image_file_id");
+                entity.Property(e => e.HasImages).HasColumnName("has_image");
             });
 
             modelBuilder.Entity<User>().ToTable("users");
@@ -47,8 +54,9 @@ namespace SpyImposterBot.Database
                 .HasColumnType("jsonb");
 
             modelBuilder.Entity<WordPack>().HasData(
-                new WordPack { Id = 1, Name = "Классика", IsPublic = true },
-                new WordPack { Id = 2, Name = "Мемы", IsPublic = true }
+                new WordPack { Id = 1, Name = "Классика", IsPublic = true, HasImage = false },
+                new WordPack { Id = 2, Name = "Мемы", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDQ2nqCqRYOei03WQwOZ3j9zocjy-3AALdEmsbeT1ZSzDbq3D730zzAQADAgADeAADOwQ" },
+                new WordPack { Id = 3, Name = "Гравити Фолз", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDQ2nqCqRYOei03WQwOZ3j9zocjy-3AALdEmsbeT1ZSzDbq3D730zzAQADAgADeAADOwQ" }
             );
 
             modelBuilder.Entity<Word>().HasData(
@@ -226,7 +234,7 @@ namespace SpyImposterBot.Database
                 new Word { Id = 153, PackId = 3, Value = "Слепой Глазго (из культа)" },
                 new Word { Id = 154, PackId = 3, Value = "Святой Валентин" },
                 new Word { Id = 155, PackId = 3, Value = "Батя Гидеона Бад" },
-                new Word { Id = 156, PackId = 3, Value = "Летувинский ловкая" },
+                new Word { Id = 156, PackId = 3, Value = "Летувинский ловкач" },
                 new Word { Id = 157, PackId = 3, Value = "Ручная ведьма" },
                 new Word { Id = 158, PackId = 3, Value = "Циклоп пластилиновый" },
                 new Word { Id = 159, PackId = 3, Value = "Татуированный друг Венди" },
