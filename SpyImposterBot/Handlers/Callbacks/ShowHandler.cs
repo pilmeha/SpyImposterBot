@@ -40,7 +40,30 @@ internal class ShowHandler : ICallbackHandler
 
         var playerNumber = game.CurrentPlayerIndex + 1;
 
-        await _msg.SendAndReplaceMessage(chatId, MessageText.PlayerTurn(playerNumber) + $"\n{text}", ct, Keyboards.Next);
+        var finalText = $"{MessageText.PlayerTurn(playerNumber)}\n{text}";
+
+        // ветвление по режимам
+        if (game.HasImages)
+        {
+            if (player.Role == Role.Spy)
+            {
+                //можно ли вынесни pack.SpyImageFileId в gameSession? чтобы не делать лишний запрос
+                var pack = await _db.WordPacks.FindAsync(new object[] {game.PackId }, ct);
+
+                if (!string.IsNullOrEmpty(pack?.SpyImageFileId))
+                {
+                    await _msg.SendAndReplacePhotoMessage(chatId, finalText, pack.SpyImageFileId, ct, Keyboards.Next);
+                    return;
+                }
+            }
+            else if (!string.IsNullOrEmpty(game.ImageFileId))
+            {
+                await _msg.SendAndReplacePhotoMessage(chatId, finalText, game.ImageFileId, ct, Keyboards.Next);
+                return;
+            }
+        }
+
+        await _msg.SendAndReplaceMessage(chatId, finalText, ct, Keyboards.Next);
     }
 }
 

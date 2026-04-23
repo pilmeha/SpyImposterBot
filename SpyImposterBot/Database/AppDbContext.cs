@@ -24,10 +24,17 @@ namespace SpyImposterBot.Database
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.CreatedBy).HasColumnName("created_by");
                 entity.Property(e => e.PackId).HasColumnName("pack_id");
-                entity.Property(e => e.GameMode).HasColumnName("game_mode");
-                entity.Property(e => e.PlayersData).HasColumnName("players_data");
+                entity.Property(e => e.PlayersData)
+                    .HasColumnName("players_data")
+                    .HasColumnType("jsonb");
                 entity.Property(e => e.CurrentPlayerIndex).HasColumnName("current_player_index");
-                entity.Property(e => e.Status).HasConversion<string>().HasColumnName("status");
+                entity.Property(e => e.Status)
+                    .HasConversion<string>()
+                    .HasColumnName("status");
+
+                entity.Property(e => e.Word).HasColumnName("word");
+                entity.Property(e => e.ImageFileId).HasColumnName("image_file_id");
+                entity.Property(e => e.HasImages).HasColumnName("has_image");
             });
 
             modelBuilder.Entity<User>().ToTable("users");
@@ -47,8 +54,9 @@ namespace SpyImposterBot.Database
                 .HasColumnType("jsonb");
 
             modelBuilder.Entity<WordPack>().HasData(
-                new WordPack { Id = 1, Name = "Классика", IsPublic = true },
-                new WordPack { Id = 2, Name = "Мемы", IsPublic = true }
+                new WordPack { Id = 1, Name = "Классика", IsPublic = true, HasImage = false },
+                new WordPack { Id = 2, Name = "Мемы", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDQ2nqCqRYOei03WQwOZ3j9zocjy-3AALdEmsbeT1ZSzDbq3D730zzAQADAgADeAADOwQ" },
+                new WordPack { Id = 3, Name = "Гравити Фолз", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDQ2nqCqRYOei03WQwOZ3j9zocjy-3AALdEmsbeT1ZSzDbq3D730zzAQADAgADeAADOwQ" }
             );
 
             modelBuilder.Entity<Word>().HasData(
@@ -62,6 +70,7 @@ namespace SpyImposterBot.Database
                 new Word { Id = 7, PackId = 1, Value = "Дом престарелых" },
                 new Word { Id = 8, PackId = 1, Value = "Зоопарк" },
                 new Word { Id = 9, PackId = 1, Value = "Казино" },
+
                 new Word { Id = 10, PackId = 1, Value = "Киностудия" },
                 new Word { Id = 11, PackId = 1, Value = "Кладбище" },
                 new Word { Id = 12, PackId = 1, Value = "Метро" },
@@ -72,6 +81,7 @@ namespace SpyImposterBot.Database
                 new Word { Id = 17, PackId = 1, Value = "Ресторан" },
                 new Word { Id = 18, PackId = 1, Value = "Свадьба" },
                 new Word { Id = 19, PackId = 1, Value = "Подводная лодка" },
+
                 new Word { Id = 20, PackId = 1, Value = "Полицейский участок" },
                 new Word { Id = 21, PackId = 1, Value = "Стадион" },
                 new Word { Id = 22, PackId = 1, Value = "Супермаркет" },
@@ -178,7 +188,77 @@ namespace SpyImposterBot.Database
                 new Word { Id = 113, PackId = 2, Value = "Мактрахер" },
                 new Word { Id = 114, PackId = 2, Value = "Пенсия хайпует" },
                 new Word { Id = 115, PackId = 2, Value = "Спидран по майнкрафту погнали" },
-                new Word { Id = 116, PackId = 2, Value = "Бургер Кинг говно" }
+                new Word { Id = 116, PackId = 2, Value = "Бургер Кинг говно" },
+
+                // Gravity Falls
+                new Word { Id = 117, PackId = 3, Value = "Дипер" },
+                new Word { Id = 118, PackId = 3, Value = "Мейбл" },
+                new Word { Id = 119, PackId = 3, Value = "Дядя Стен" },
+
+                new Word { Id = 120, PackId = 3, Value = "Венди" },
+                new Word { Id = 121, PackId = 3, Value = "Робин" },
+                new Word { Id = 122, PackId = 3, Value = "Бил Шифр" },
+                new Word { Id = 123, PackId = 3, Value = "Блендин" },
+                new Word { Id = 124, PackId = 3, Value = "Стенфорд" },
+                new Word { Id = 125, PackId = 3, Value = "Гидеон" },
+                new Word { Id = 126, PackId = 3, Value = "Зус" },
+                new Word { Id = 127, PackId = 3, Value = "Гренда" },
+                new Word { Id = 128, PackId = 3, Value = "Бабулита" },
+                new Word { Id = 129, PackId = 3, Value = "Пасификка" },
+
+                new Word { Id = 130, PackId = 3, Value = "Толстый шериф Плапс" },
+                new Word { Id = 131, PackId = 3, Value = "Кенди" },
+                new Word { Id = 132, PackId = 3, Value = "Худой шериф Дурланд" },
+                new Word { Id = 133, PackId = 3, Value = "Старик Макгакет" },
+                new Word { Id = 134, PackId = 3, Value = "Пухля" },
+                new Word { Id = 135, PackId = 3, Value = "Козел" },
+                new Word { Id = 136, PackId = 3, Value = "Тоби решительный" },
+                new Word { Id = 137, PackId = 3, Value = "Русалдо" },
+                new Word { Id = 138, PackId = 3, Value = "Гифани" },
+                new Word { Id = 139, PackId = 3, Value = "Бей его" },
+
+                new Word { Id = 140, PackId = 3, Value = "Тетя из кафе Сьзан" },
+                new Word { Id = 141, PackId = 3, Value = "Тембри" },
+                new Word { Id = 142, PackId = 3, Value = "Шандра Хименес" },
+                new Word { Id = 143, PackId = 3, Value = "Томпсон" },
+                new Word { Id = 144, PackId = 3, Value = "Крамбл Макс Кернишь" },
+                new Word { Id = 145, PackId = 3, Value = "Мультимедведь" },
+                new Word { Id = 146, PackId = 3, Value = "Мужикотавр" },
+                new Word { Id = 147, PackId = 3, Value = "Малыш времени" },
+                new Word { Id = 148, PackId = 3, Value = "Шмебьюлок" },
+                new Word { Id = 149, PackId = 3, Value = "Бтс" },
+
+                new Word { Id = 150, PackId = 3, Value = "Восковые статуи" },
+                new Word { Id = 151, PackId = 3, Value = "Единорожки" },
+                new Word { Id = 152, PackId = 3, Value = "Агенты ФБР Пауэрс (черные волосы)" },
+                new Word { Id = 153, PackId = 3, Value = "Слепой Глазго (из культа)" },
+                new Word { Id = 154, PackId = 3, Value = "Святой Валентин" },
+                new Word { Id = 155, PackId = 3, Value = "Батя Гидеона Бад" },
+                new Word { Id = 156, PackId = 3, Value = "Летувинский ловкач" },
+                new Word { Id = 157, PackId = 3, Value = "Ручная ведьма" },
+                new Word { Id = 158, PackId = 3, Value = "Циклоп пластилиновый" },
+                new Word { Id = 159, PackId = 3, Value = "Татуированный друг Венди" },
+
+                new Word { Id = 160, PackId = 3, Value = "Блондин (друг Венди)" },
+                new Word { Id = 161, PackId = 3, Value = "Гигантская рука (Голова с рукой)" },
+                new Word { Id = 162, PackId = 3, Value = "Арчибальд (дух лесоруб)" },
+                new Word { Id = 163, PackId = 3, Value = "Тетя паук (бывшая Стена)" },
+                new Word { Id = 164, PackId = 3, Value = "Замятыш (клон Дипера)" },
+                new Word { Id = 165, PackId = 3, Value = "Основатель Гравити Фолз" },
+                new Word { Id = 166, PackId = 3, Value = "Утка Холмс" },
+                new Word { Id = 167, PackId = 3, Value = "Лилигоферы" },
+                new Word { Id = 168, PackId = 3, Value = "Охраник бассейна" },
+                new Word { Id = 169, PackId = 3, Value = "Заключенный бассейна" },
+
+                new Word { Id = 170, PackId = 3, Value = "Тед Стрендж (брат Била)" },
+                new Word { Id = 171, PackId = 3, Value = "Брат Зуса" },
+                new Word { Id = 172, PackId = 3, Value = "Монстр который умеет перевоплощаться" },
+                new Word { Id = 173, PackId = 3, Value = "Монстр из заставки, на 1ом кадре" },
+                new Word { Id = 174, PackId = 3, Value = "Мирный жител, чувак с пиццей на футболке" },
+                new Word { Id = 175, PackId = 3, Value = "Дипер кртуой" },
+                new Word { Id = 176, PackId = 3, Value = "Судья кот из мира Мейбл" }
+
+
                 );
         }
 

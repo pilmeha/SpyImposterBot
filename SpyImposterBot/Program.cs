@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using DotNetEnv;
 using MihaZupan;
 using SpyImposterBot.Database;
-using System.Windows.Input;
 
 Env.Load();
 
@@ -85,6 +84,8 @@ var builder = Host.CreateDefaultBuilder(args)
 
         services.AddScoped<ICommandHandler, StartCommandHandler>();
         services.AddScoped<ICommandHandler, NewGameCommandHandler>();
+
+        services.AddScoped<ICommandHandler, DebugPhotoHandler>();
 
         services.AddScoped<UpdateDispatcher>();
 
