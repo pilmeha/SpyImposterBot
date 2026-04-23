@@ -40,8 +40,8 @@ static class Keyboards
             new[] { InlineKeyboardButton.WithCallbackData("Классика", "pack_1") },
             new[] { InlineKeyboardButton.WithCallbackData("Мемы", "pack_2") },
             new[] { InlineKeyboardButton.WithCallbackData("Гравити Фолз", "pack_3") },
-            new[] { InlineKeyboardButton.WithCallbackData("Парные слова", "pack_4") },
-            new[] { InlineKeyboardButton.WithCallbackData("Подборки слов", "pack_5") },
+            //new[] { InlineKeyboardButton.WithCallbackData("Парные слова", "pack_4") },
+            //new[] { InlineKeyboardButton.WithCallbackData("Подборки слов", "pack_5") },
     });
 
     public static ReplyKeyboardMarkup MainMenu =>
