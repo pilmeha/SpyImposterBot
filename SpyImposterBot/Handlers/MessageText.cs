@@ -3,7 +3,7 @@
 internal static class MessageText
 {
     // StartCommandHandler
-    public const string Start = "Привет! Это игра в шпиона";
+    public const string Start = "Привет! Это игра в шпиона!\nЧтобы начать нажми на /newgame";
 
     // NewGameCommandHandler и GoGameTypeHandler
     public const string ChooseGameType = "Выбери тему:";

@@ -12,7 +12,6 @@ namespace SpyImposterBot.Database
         public DbSet<WordPack> WordPacks => Set<WordPack>();
         public DbSet<Word> Words => Set<Word>();
         public DbSet<GameSession> GameSessions => Set<GameSession>();
-
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
