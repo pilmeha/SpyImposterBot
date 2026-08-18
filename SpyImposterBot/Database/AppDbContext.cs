@@ -47,6 +47,10 @@ namespace SpyImposterBot.Database
             modelBuilder.Entity<Word>()
                 .Property(x => x.Value)
                 .HasColumnName("word");
+            
+            modelBuilder.Entity<Word>()
+                .Property(x => x.PairId)
+                .HasColumnName("pair_id");
 
             modelBuilder.Entity<GameSession>()
                 .Property(x => x.PlayersData)
@@ -55,7 +59,8 @@ namespace SpyImposterBot.Database
             modelBuilder.Entity<WordPack>().HasData(
                 new WordPack { Id = 1, Name = "Классика", IsPublic = true, HasImage = false },
                 new WordPack { Id = 2, Name = "Мемы", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDcWnqFF73-ck3yCkIGaC-ILiGbz8vAAIfE2sbeT1ZS65DyBa6QXhIAQADAgADeQADOwQ" },
-                new WordPack { Id = 3, Name = "Гравити Фолз", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDcWnqFF73-ck3yCkIGaC-ILiGbz8vAAIfE2sbeT1ZS65DyBa6QXhIAQADAgADeQADOwQ" }
+                new WordPack { Id = 3, Name = "Гравити Фолз", IsPublic = true, HasImage = true, SpyImageFileId = "AgACAgIAAxkBAAIDcWnqFF73-ck3yCkIGaC-ILiGbz8vAAIfE2sbeT1ZS65DyBa6QXhIAQADAgADeQADOwQ" },
+                new WordPack { Id = 4, Name = "Парные слова", IsPublic = true, HasImage = false }
             );
 
             modelBuilder.Entity<Word>().HasData(
@@ -256,7 +261,148 @@ namespace SpyImposterBot.Database
                 new Word { Id = 174, PackId = 3, Value = "Мирный жител, чувак с пиццей на футболке", ImageFileId = "AgACAgIAAxkBAAIHfGn0Nzgn2zBuU0R18O1emiD16BQTAAKPEWsbcEKgS8ddiA3y-CVHAQADAgADeQADOwQ" },
                 new Word { Id = 175, PackId = 3, Value = "Дипер кртуой" },
                 new Word { Id = 176, PackId = 3, Value = "Судья кот из мира Мейбл", ImageFileId = "AgACAgIAAxkBAAIHgGn0N2kH9TP-EiPqeDolzGkLmuO3AAKQEWsbcEKgS6WM1Lwoz-4JAQADAgADbQADOwQ" },
-                new Word { Id = 177, PackId = 3, Value = "Норман", ImageFileId = "AgACAgIAAxkBAAIHhGn0N8Ouvj9c83V28TVlAAGNBTWCvQACkRFrG3BCoEua0LSnMgKHuQEAAwIAA3gAAzsE" }
+                new Word { Id = 177, PackId = 3, Value = "Норман", ImageFileId = "AgACAgIAAxkBAAIHhGn0N8Ouvj9c83V28TVlAAGNBTWCvQACkRFrG3BCoEua0LSnMgKHuQEAAwIAA3gAAzsE" },
+            
+                // Paired words
+                new Word { 
+                    Id = 178,
+                    PackId = 4,
+                    PairId = 1,
+                    Value = "Кошка"
+                },
+
+                new Word {
+                    Id = 179,
+                    PackId = 4,
+                    PairId = 1,
+                    Value = "Собака"
+                },
+
+                new Word {
+                    Id = 180,
+                    PackId = 4,
+                    PairId = 2,
+                    Value = "Чай"
+                },
+
+                new Word {
+                    Id = 181,
+                    PackId = 4,
+                    PairId = 2,
+                    Value = "Кофе"
+                },
+
+                new Word {
+                    Id = 182,
+                    PackId = 4,
+                    PairId = 3,
+                    Value = "Море"
+                },
+
+                new Word {
+                    Id = 183,
+                    PackId = 4,
+                    PairId = 3,
+                    Value = "Океан"
+                },
+
+                new Word {
+                    Id = 184,
+                    PackId = 4,
+                    PairId = 4,
+                    Value = "Самолет"
+                },
+
+                new Word {
+                    Id = 185,
+                    PackId = 4,
+                    PairId = 4,
+                    Value = "Вертолет"
+                },
+
+                new Word {
+                    Id = 186,
+                    PackId = 4,
+                    PairId = 5,
+                    Value = "Зима"
+                },
+
+                new Word {
+                    Id = 187,
+                    PackId = 4,
+                    PairId = 5,
+                    Value = "Лето"
+                },
+
+                new Word {
+                    Id = 188,
+                    PackId = 4,
+                    PairId = 6,
+                    Value = "Книга"
+                },
+
+                new Word {
+                    Id = 189,
+                    PackId = 4,
+                    PairId = 6,
+                    Value = "Журнал"
+                },
+
+                new Word {
+                    Id = 190,
+                    PackId = 4,
+                    PairId = 7,
+                    Value = "Кино"
+                },
+
+                new Word {
+                    Id = 191,
+                    PackId = 4,
+                    PairId = 7,
+                    Value = "Сериал"
+                },
+
+                new Word {
+                    Id = 192,
+                    PackId = 4,
+                    PairId = 8,
+                    Value = "Врач"
+                },
+
+                new Word {
+                    Id = 193,
+                    PackId = 4,
+                    PairId = 8,
+                    Value = "Медсестра"
+                },
+
+                new Word {
+                    Id = 194,
+                    PackId = 4,
+                    PairId = 9,
+                    Value = "Пицца"
+                },
+
+                new Word {
+                    Id = 195,
+                    PackId = 4,
+                    PairId = 9,
+                    Value = "Бургер"
+                },
+
+                new Word {
+                    Id = 196,
+                    PackId = 4,
+                    PairId = 10,
+                    Value = "Лев"
+                },
+
+                new Word {
+                    Id = 197,
+                    PackId = 4,
+                    PairId = 10,
+                    Value = "Тигр"
+                }
             );
         }
 

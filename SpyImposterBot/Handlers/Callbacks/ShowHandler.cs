@@ -36,8 +36,23 @@ internal class ShowHandler : ICallbackHandler
 
         var player = _gameService.GetPlayer(game);
 
-        var text = player.Role == Role.Spy ? MessageText.Spy : MessageText.Word(player.Word);
+        // var text = player.Role == Role.Spy ? MessageText.Spy : MessageText.Word(player.Word);
 
+        var text = "";
+
+        if (game.PackId == 4 && player.Role == Role.Spy)
+        {
+            text = MessageText.Word(player.Word!);
+        }        
+        else if (player.Role == Role.Spy)
+        {
+            text = MessageText.Spy;
+        }        
+        else
+        {
+            text = MessageText.Word(player.Word!);
+        }        
+        
         var playerNumber = game.CurrentPlayerIndex + 1;
 
         var finalText = $"{MessageText.PlayerTurn(playerNumber)}\n{text}";

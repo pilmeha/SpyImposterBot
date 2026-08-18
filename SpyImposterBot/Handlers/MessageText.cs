@@ -26,7 +26,7 @@ internal static class MessageText
         => $"Твое слово: {word}";
 
     public const string Spy = "Ты ШПИОН 😈";
-
+    
     // NextHandler
     public const string NextPlayer = "Передайте телефон следующему игроку";
     public const string GameFinished = "Игра окончена 👾\n\nХотите сыграть ещё раз?";
