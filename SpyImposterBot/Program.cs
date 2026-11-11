@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using DotNetEnv;
 using MihaZupan;
 using SpyImposterBot.Database;
+using System.Net;
 
 Env.Load();
 
@@ -47,8 +48,9 @@ var builder = Host.CreateDefaultBuilder(args)
         var ProxyPassword = Environment.GetEnvironmentVariable("PROXY_PASSWORD")
             ?? throw new InvalidOperationException("PROXY_PASSWORD not set");
 
-        //var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort));
-        var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort), proxyUserName, ProxyPassword);
+        // var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort));
+        // var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort), proxyUserName, ProxyPassword);
+        var proxy = new WebProxy($"http://{proxyHost}:{proxyPort}");
 
         var httpClient = new HttpClient(
             new HttpClientHandler
