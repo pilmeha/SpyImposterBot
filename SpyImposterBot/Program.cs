@@ -50,19 +50,38 @@ var builder = Host.CreateDefaultBuilder(args)
 
         // var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort));
         // var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort), proxyUserName, ProxyPassword);
-        var proxy = new WebProxy($"http://{proxyHost}:{proxyPort}");
+        
+        // // Через https
+        // var proxy = new WebProxy($"http://{proxyHost}:{proxyPort}");
+        // var httpClient = new HttpClient(
+        //     new HttpClientHandler
+        //     {
+        //         Proxy = proxy,
+        //         UseProxy = true
+        //     }
+        // );
 
-        var httpClient = new HttpClient(
-            new HttpClientHandler
-            {
-                Proxy = proxy,
-                UseProxy = true
-            }
-        );
+        // // Через socks5
+        // var proxy = new WebProxy($"socks5://127.0.0.1:3066");
 
-        // Telegram
+        // var httpClient = new HttpClient(
+        //     new SocketsHttpHandler
+        //     {
+        //         Proxy = proxy,
+        //         UseProxy = true
+        //     }
+        // );        
+        
+        // // Telegram
+        // services.AddSingleton<ITelegramBotClient>(
+        //     new TelegramBotClient(botToken, httpClient)
+        // );
+
+        // без прокси и впн
+        var httpClient = new HttpClient();
+
         services.AddSingleton<ITelegramBotClient>(
-            new TelegramBotClient(botToken, httpClient)
+            new TelegramBotClient(botToken)
         );
 
         // EF Core
