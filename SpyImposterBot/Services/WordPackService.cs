@@ -57,19 +57,33 @@ internal class WordPackService : IWordPackService
         return wordsToAdd.Count();
     }
 
-    public async Task<bool> CanAccessPackAsync(long packId, long telegramId)
-    {
-        var pack = await _db.WordPacks
-            .FirstOrDefaultAsync(x => x.Id == packId);
+public async Task<bool> CanAccessPackAsync(long packId, long telegramId)
+{
+    var pack = await _db.WordPacks
+        .AsNoTracking()
+        .FirstOrDefaultAsync(x => x.Id == packId);
 
-        if (pack == null) return false;
+    Console.WriteLine(pack == null
+    ? "[CanAccessPack] Pack not found"
+    : $"[CanAccessPack] Found: {pack.Name}, UserId: {pack.UserId}, IsPublic: {pack.IsPublic}");
 
-        if (pack.UserId == null && pack.IsPublic) return false;
+    if (pack == null)
+        return false;
 
-        var userId = await GetUserIdAsync(telegramId);
+    // Системные подборки доступны всем.
+    if (pack.UserId == null)
+        return true;
 
-        return pack.UserId == userId || pack.IsPublic;
-    }
+    // Публичные пользовательские подборки доступны всем.
+    if (pack.IsPublic)
+        return true;
+
+    var userId = await _userService.GetOrCreateUserIdAsync(telegramId, null);
+
+    
+
+    return pack.UserId == userId;
+}
 
     public async Task<WordPack> CreatePackAsync(long telegramId, string name, IEnumerable<string> words)
     {
