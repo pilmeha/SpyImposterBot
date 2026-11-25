@@ -29,18 +29,18 @@ internal class GameService : IGameService
             .FirstAsync();
     }
 
-    public async Task<GameSession> CreateGameAsync(int playersCount, int packId)
+    public async Task<GameSession> CreateGameAsync(int playersCount, int packId, long createdByTelegramId)
     {
         var pack = await _db.WordPacks.FindAsync((long)packId)
             ?? throw new Exception("Pack not found");
 
         if (packId == PairedWordsPackId)
-            return await CreatePairedWordsGameAsync(playersCount, pack);
+            return await CreatePairedWordsGameAsync(playersCount, pack, createdByTelegramId);
         
-        return await CreateClassicGameAsync(playersCount, pack);
+        return await CreateClassicGameAsync(playersCount, pack, createdByTelegramId);
     }
 
-    private async Task<GameSession> CreateClassicGameAsync(int playersCount, WordPack pack)
+    private async Task<GameSession> CreateClassicGameAsync(int playersCount, WordPack pack, long createdByTelegramId)
     {
         var wordEntity = await GetRandomWordAsync((int)pack.Id);
 
@@ -61,6 +61,7 @@ internal class GameService : IGameService
 
         return new GameSession
         {
+            CreatedBy = createdByTelegramId,
             PackId = pack.Id,
             Word = wordEntity.Value,
             ImageFileId = wordEntity.ImageFileId,
@@ -71,7 +72,7 @@ internal class GameService : IGameService
         };
     }
     
-    private async Task<GameSession> CreatePairedWordsGameAsync(int playersCount, WordPack pack)
+    private async Task<GameSession> CreatePairedWordsGameAsync(int playersCount, WordPack pack, long createdByTelegramId)
     {
         var pairs = await _db.Words
             .Where(w =>
@@ -109,6 +110,7 @@ internal class GameService : IGameService
 
         return new GameSession
         {
+            CreatedBy = createdByTelegramId,
             PackId = pack.Id,
             Word = $"{commonWord} / {differentWord}",
             ImageFileId = null,

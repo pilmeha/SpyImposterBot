@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 internal class PlayerCountHandler : ICallbackHandler
 {
     private readonly IGameService _gameService;
+    private readonly IWordPackService _wordPackService;
     private readonly AppDbContext _db;
     private readonly GameSessionStorage _storage;
     private readonly ITelegramBotClient _bot;
@@ -12,9 +13,10 @@ internal class PlayerCountHandler : ICallbackHandler
 
     private const string Prefix = "players_";
 
-    public PlayerCountHandler(IGameService gameService, AppDbContext db, GameSessionStorage storage, ITelegramBotClient bot, MessageService msg)
+    public PlayerCountHandler(IGameService gameService, IWordPackService wordPackService, AppDbContext db, GameSessionStorage storage, ITelegramBotClient bot, MessageService msg)
     {
         _gameService = gameService;
+        _wordPackService = wordPackService;
         _db = db;
         _storage = storage;
         _bot = bot;
@@ -28,8 +30,9 @@ internal class PlayerCountHandler : ICallbackHandler
     {
         var query = update.CallbackQuery!;
         var chatId = query.Message!.Chat.Id;
+        var telegramUserId = query.From.Id;
 
-        await _bot.AnswerCallbackQuery(query.Id);
+        await _bot.AnswerCallbackQuery(query.Id, cancellationToken: ct);
 
         var count = int.Parse(query.Data!.Substring(Prefix.Length));
 
@@ -39,7 +42,15 @@ internal class PlayerCountHandler : ICallbackHandler
             return;
         }
 
-        var game = await _gameService.CreateGameAsync(count, (int)packId);
+        var canAccess = await _wordPackService.CanAccessPackAsync(packId, telegramUserId);
+
+        if (!canAccess)
+        {
+            await _msg.SendAndReplaceMessage(chatId, MessageText.PackNotFound, ct, Keyboards.GameType);
+            return;
+        }
+
+        var game = await _gameService.CreateGameAsync(count, (int)packId, telegramUserId);
 
         _db.GameSessions.Add(game);
         await _db.SaveChangesAsync(ct);
