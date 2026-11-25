@@ -246,4 +246,8 @@ internal class WordPackService : IWordPackService
             .ToList();
     }
 
+    public async Task<int> GetWordsCountAsync(long packId)
+    {
+        return await _db.Words.CountAsync(x => x.PackId == packId);
+    }
 }

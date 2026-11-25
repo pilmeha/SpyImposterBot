@@ -15,4 +15,6 @@ internal interface IWordPackService
     Task<int> RemoveWordsAsync(long packId, long telegramId, IEnumerable<string> words);
 
     Task DeletePackAsync(long packId, long telegramId);
+
+    Task<int> GetWordsCountAsync(long packId);
 }
