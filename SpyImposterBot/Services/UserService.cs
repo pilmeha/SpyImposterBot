@@ -31,7 +31,7 @@ internal class UserService : IUserService
 
             _db.Users.Add(user);
         }
-        else if (user.Username != username)
+        else if (username != null && user.Username != username)
         {
             user.Username = username;
         }

@@ -92,8 +92,10 @@ var builder = Host.CreateDefaultBuilder(args)
         // Services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IGameService, GameService>();
+        services.AddScoped<IWordPackService, WordPackService>();
         services.AddScoped<MessageService>();
         services.AddSingleton<GameSessionStorage>();
+        services.AddSingleton<WordPackCreationStorage>();
 
         // Handler
         //services.AddScoped<UpdateHandler>();
@@ -104,10 +106,14 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddScoped<ICallbackHandler, PlayAgainHandler>();
         services.AddScoped<ICallbackHandler, GoGameTypeHandler>();
 
+        services.AddScoped<ICallbackHandler, CustomWordPackCallbackHandler>();
+
         services.AddScoped<ICommandHandler, StartCommandHandler>();
         services.AddScoped<ICommandHandler, NewGameCommandHandler>();
 
         services.AddScoped<ICommandHandler, DebugPhotoHandler>();
+
+        services.AddScoped<ICommandHandler, WordPackInputCommandHandler>();
 
         services.AddScoped<UpdateDispatcher>();
 

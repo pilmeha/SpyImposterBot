@@ -49,7 +49,7 @@ static class Keyboards
             new[] {
                 new[] { InlineKeyboardButton.WithCallbackData("Мои подборки", "myPacks") },
                 new[] { InlineKeyboardButton.WithCallbackData("Создать подборку", "createPack") },
-                new[] { InlineKeyboardButton.WithCallbackData("Назад", "backToGameType") }
+                new[] { InlineKeyboardButton.WithCallbackData("Назад", "goGameType") }
             }
         );
 

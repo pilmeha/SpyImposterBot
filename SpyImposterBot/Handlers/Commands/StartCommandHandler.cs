@@ -18,6 +18,9 @@ public class StartCommandHandler : ICommandHandler
     
     public async Task HandleAsync(Update update, CancellationToken ct)
     {
+        if (update.Message?.Text != STARTMessageCommand)
+            return;
+
         var msg = update.Message!;
         var chatId = msg.Chat.Id;
 
