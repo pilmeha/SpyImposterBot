@@ -63,6 +63,15 @@ namespace SpyImposterBot.Database
                 new WordPack { Id = 4, Name = "Парные слова", IsPublic = true, HasImage = false }
             );
 
+            modelBuilder.Entity<WordPack>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<WordPack>()
+                .HasIndex(x => x.UserId);
+
             modelBuilder.Entity<Word>().HasData(
                 // classic
                 new Word { Id = 1, PackId = 1, Value = "Париж" },
