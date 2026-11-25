@@ -18,6 +18,9 @@ public class NewGameCommandHandler : ICommandHandler
 
     public async Task HandleAsync(Update update, CancellationToken ct)
     {
+        if (update.Message?.Text != NEWGAMEMessageCommand)
+            return;
+
         var chatId = update.Message!.Chat.Id;
 
         await _msg.SendAndReplaceMessage(chatId, MessageText.ChooseGameType, ct, Keyboards.GameType);

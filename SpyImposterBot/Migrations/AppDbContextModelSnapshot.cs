@@ -1487,6 +1487,8 @@ namespace SpyImposterBot.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("word_packs", (string)null);
 
                     b.HasData(
@@ -1520,6 +1522,14 @@ namespace SpyImposterBot.Migrations
                             IsPublic = true,
                             Name = "Парные слова"
                         });
+                });
+
+            modelBuilder.Entity("WordPack", b =>
+                {
+                    b.HasOne("User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

@@ -50,19 +50,38 @@ var builder = Host.CreateDefaultBuilder(args)
 
         // var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort));
         // var proxy = new HttpToSocks5Proxy(proxyHost, int.Parse(proxyPort), proxyUserName, ProxyPassword);
-        var proxy = new WebProxy($"http://{proxyHost}:{proxyPort}");
+        
+        // // Через https
+        // var proxy = new WebProxy($"http://{proxyHost}:{proxyPort}");
+        // var httpClient = new HttpClient(
+        //     new HttpClientHandler
+        //     {
+        //         Proxy = proxy,
+        //         UseProxy = true
+        //     }
+        // );
 
-        var httpClient = new HttpClient(
-            new HttpClientHandler
-            {
-                Proxy = proxy,
-                UseProxy = true
-            }
-        );
+        // // Через socks5
+        // var proxy = new WebProxy($"socks5://127.0.0.1:3066");
 
-        // Telegram
+        // var httpClient = new HttpClient(
+        //     new SocketsHttpHandler
+        //     {
+        //         Proxy = proxy,
+        //         UseProxy = true
+        //     }
+        // );        
+        
+        // // Telegram
+        // services.AddSingleton<ITelegramBotClient>(
+        //     new TelegramBotClient(botToken, httpClient)
+        // );
+
+        // без прокси и впн
+        var httpClient = new HttpClient();
+
         services.AddSingleton<ITelegramBotClient>(
-            new TelegramBotClient(botToken, httpClient)
+            new TelegramBotClient(botToken)
         );
 
         // EF Core
@@ -73,8 +92,10 @@ var builder = Host.CreateDefaultBuilder(args)
         // Services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IGameService, GameService>();
+        services.AddScoped<IWordPackService, WordPackService>();
         services.AddScoped<MessageService>();
         services.AddSingleton<GameSessionStorage>();
+        services.AddSingleton<WordPackCreationStorage>();
 
         // Handler
         //services.AddScoped<UpdateHandler>();
@@ -85,10 +106,14 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddScoped<ICallbackHandler, PlayAgainHandler>();
         services.AddScoped<ICallbackHandler, GoGameTypeHandler>();
 
+        services.AddScoped<ICallbackHandler, CustomWordPackCallbackHandler>();
+
         services.AddScoped<ICommandHandler, StartCommandHandler>();
         services.AddScoped<ICommandHandler, NewGameCommandHandler>();
 
         services.AddScoped<ICommandHandler, DebugPhotoHandler>();
+
+        services.AddScoped<ICommandHandler, WordPackInputCommandHandler>();
 
         services.AddScoped<UpdateDispatcher>();
 
