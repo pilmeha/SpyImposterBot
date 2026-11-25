@@ -35,14 +35,75 @@ static class Keyboards
         });
 
     public static InlineKeyboardMarkup GameType =>
-    new(new[]
+        new(new[]
+        {
+                new[] { InlineKeyboardButton.WithCallbackData("Классика", "pack_1") },
+                new[] { InlineKeyboardButton.WithCallbackData("Мемы", "pack_2") },
+                new[] { InlineKeyboardButton.WithCallbackData("Гравити Фолз", "pack_3") },
+                new[] { InlineKeyboardButton.WithCallbackData("Парные слова", "pack_4") },
+                new[] { InlineKeyboardButton.WithCallbackData("Кастомные подборки", "customPacks") }
+        });
+
+    public static InlineKeyboardMarkup CustomPacksMenu =>
+        new(
+            new[] {
+                new[] { InlineKeyboardButton.WithCallbackData("Мои подборки", "myPacks") },
+                new[] { InlineKeyboardButton.WithCallbackData("Создать подборку", "createPack") },
+                new[] { InlineKeyboardButton.WithCallbackData("Назад", "backToGameType") }
+            }
+        );
+
+    public static InlineKeyboardMarkup MyPacks(IEnumerable<WordPack> packs)
     {
-            new[] { InlineKeyboardButton.WithCallbackData("Классика", "pack_1") },
-            new[] { InlineKeyboardButton.WithCallbackData("Мемы", "pack_2") },
-            new[] { InlineKeyboardButton.WithCallbackData("Гравити Фолз", "pack_3") },
-            new[] { InlineKeyboardButton.WithCallbackData("Парные слова", "pack_4") },
-            //new[] { InlineKeyboardButton.WithCallbackData("Подборки слов", "pack_5") },
-    });
+        var rows = packs
+            .Select(pack => new[]
+            {
+                InlineKeyboardButton.WithCallbackData(pack.Name, $"selectCustomPack_{pack.Id}")
+            })
+            .ToList();
+
+        rows.Add(new[]
+        {
+            InlineKeyboardButton.WithCallbackData("Назад", "customPacks")
+        });
+
+        return new InlineKeyboardMarkup(rows);
+    }
+
+    public static InlineKeyboardMarkup CustomPackActions(long packId)
+    {
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("Начать игру", $"startCustomPack_{packId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("Редактировать набор", $"editCustomPack_{packId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("К моим подборкам", "myPacks") }
+        });
+    }
+
+    public static InlineKeyboardMarkup EditCustomPack(long packId)
+    {
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("Добавить слова", $"addWords_{packId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("Удалить слова", $"removeWords_{packId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("Переименновать", $"renamePack_{packId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("Удалить подборку", $"deleteCustomPack_{packId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("Назад", $"selectCustomPack_{packId}") }
+        });
+    }
+
+    public static InlineKeyboardMarkup ConfirmDeletePack(long packId)
+    {
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("Да, удалить", $"confirmDeletePack_{packId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("Галя, отмена", $"selectCustomPack_{packId}") }
+        });
+    }
+
+    public static InlineKeyboardMarkup CancelPackInput => new(
+        new[] { InlineKeyboardButton.WithCallbackData("Галя, отмена", "cancelPackInput") }
+    );
 
     public static ReplyKeyboardMarkup MainMenu =>
         new(new[]
